@@ -60,6 +60,15 @@ export const AuthProvider = ({ children }) => {
         throw new Error('Could not find token or user data in response');
       }
       
+      // Check if 2FA is enabled for this user
+      if (userData.enableTwoFA) {
+        // Store temporary data for 2FA verification
+        localStorage.setItem("tempAuthToken", token);
+        localStorage.setItem("tempUserData", JSON.stringify(userData));
+        return { success: true, requiresTwoFA: true, userData };
+      }
+      
+      // No 2FA required, complete login
       localStorage.setItem("authToken", token);
       localStorage.setItem("userData", JSON.stringify(userData));
       setUser(userData);
@@ -68,6 +77,39 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error('Login error:', error);
       return { success: false, error: error.message || 'Login failed' };
+    }
+  };
+
+  const verifyTwoFA = async (code) => {
+    try {
+      const tempToken = localStorage.getItem("tempAuthToken");
+      const tempUserData = localStorage.getItem("tempUserData");
+      
+      if (!tempToken || !tempUserData) {
+        throw new Error('No pending 2FA verification');
+      }
+      
+      // Verify 2FA code with backend
+      const response = await apiClient.post('/api/auth/verify-2fa', { code }, {
+        headers: { Authorization: `Bearer ${tempToken}` }
+      });
+      
+      if (response.success) {
+        // 2FA verified, complete login
+        const userData = JSON.parse(tempUserData);
+        localStorage.setItem("authToken", tempToken);
+        localStorage.setItem("userData", tempUserData);
+        localStorage.removeItem("tempAuthToken");
+        localStorage.removeItem("tempUserData");
+        setUser(userData);
+        
+        return { success: true };
+      } else {
+        return { success: false, error: 'Invalid verification code' };
+      }
+    } catch (error) {
+      console.error('2FA verification error:', error);
+      return { success: false, error: error.message || '2FA verification failed' };
     }
   };
 
@@ -88,7 +130,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, register, logout, verifyTwoFA, loading }}>
       {children}
     </AuthContext.Provider>
   );

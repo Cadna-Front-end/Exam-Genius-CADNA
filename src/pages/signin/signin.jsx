@@ -3,6 +3,7 @@ import { CiMail, CiLock } from "react-icons/ci";
 import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 import { IoIosCheckboxOutline } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const Signin = () => {
   const [email, setEmail] = useState("");
@@ -13,6 +14,7 @@ const Signin = () => {
   const [rememberMe, setRememberMe] = useState(false);
 
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   // Load remembered email
   useEffect(() => {
@@ -41,33 +43,29 @@ const Signin = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("https://your-api.com/api/signin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        console.log("Login successful:", data);
-
+      const result = await login({ email, password });
+      
+      if (result.success) {
         if (rememberMe) {
           localStorage.setItem("rememberedEmail", email);
         } else {
           localStorage.removeItem("rememberedEmail");
         }
-
-        if (data.token) {
-          localStorage.setItem("authToken", data.token);
+        
+        // Check if 2FA is required
+        if (result.requiresTwoFA) {
+          navigate('/2fa', { state: { userData: result.userData } });
+        } else {
+          // Get user data to determine role and redirect
+          const userData = JSON.parse(localStorage.getItem('userData'));
+          const redirectPath = userData?.role === 'admin' ? '/admin' : '/student';
+          navigate(redirectPath);
         }
-
-        alert("Login successful!");
-        navigate("/dashboard");
       } else {
-        setError(data.message || "Invalid email or password.");
+        setError(result.error || "Invalid credentials");
       }
     } catch (error) {
+      console.error('Signin error:', error);
       setError("Network error. Please try again later.");
     } finally {
       setLoading(false);
@@ -199,7 +197,10 @@ const Signin = () => {
           <div className="text-center mt-3">
             <p className="font-Inter text-sm text-[#000000E5]">
               Don't have an account?{" "}
-              <span className="text-[#3B82F6] font-medium cursor-pointer">
+              <span 
+                onClick={() => navigate("/register/account")}
+                className="text-[#3B82F6] font-medium cursor-pointer hover:underline"
+              >
                 Sign Up
               </span>
             </p>
