@@ -1,15 +1,26 @@
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContextDefinition";
+import Loading from "./UI/Loading";
 
 const PublicRoute = ({ children }) => {
-  const { user, loading } = useAuth();
+  const { user, loading } = useContext(AuthContext);
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return <Loading />;
   }
 
   if (user) {
-    const redirectPath = user.role === "admin" ? "/admin" : "/student";
+    // Define valid role-to-route mappings
+    const roleRoutes = {
+      admin: "/admin",
+      instructor: "/instructor",
+      student: "/student"
+    };
+
+    // Get redirect path with fallback to student dashboard
+    const redirectPath = roleRoutes[user.role] || "/student";
+
     return <Navigate to={redirectPath} replace />;
   }
 

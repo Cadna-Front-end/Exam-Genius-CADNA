@@ -5,22 +5,33 @@ import TwoFactorAuth from "./pages/TwoFactorAuth.jsx";
 import AccountDetails from "./pages/registration/accountdetails.jsx";
 import PersonalInfo from "./pages/registration/personalinfo.jsx";
 import SecurityAndFinalize from "./pages/registration/securityandfinalize.jsx";
-import RegistrationSuccess from "./pages/RegistrationSuccess.jsx";
+import CreatingAccount from "./pages/registration/CreatingAccount.jsx";
+import RegistrationComplete from "./pages/registration/RegistrationComplete.jsx";
 import StudentDashboard from "./dashboards/studentdashboard/StudentDashboard.jsx";
+import InstructorDashboard from "./dashboards/instructordashboard/InstructorDashboard.jsx";
 import AdminDashboard from "./dashboards/admindashboard/AdminDashboard.jsx";
+import ExamTaking from "./pages/ExamTaking.jsx";
+import StudentExams from "./pages/StudentExams.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import PublicRoute from "./components/PublicRoute.jsx";
+import ErrorBoundary from "./components/ErrorBoundary.jsx";
+import NotFound from "./pages/NotFound.jsx";
 
 function App() {
   return (
-    <Routes>
+    <ErrorBoundary>
+      <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/signin" element={
         <PublicRoute>
           <Signin />
         </PublicRoute>
       } />
-      <Route path="/2fa" element={<TwoFactorAuth />} />
+      <Route path="/2fa" element={
+        <PublicRoute>
+          <TwoFactorAuth />
+        </PublicRoute>
+      } />
       <Route path="/register/account" element={
         <PublicRoute>
           <AccountDetails />
@@ -36,22 +47,44 @@ function App() {
           <SecurityAndFinalize />
         </PublicRoute>
       } />
-      <Route path="/register/success" element={
+      <Route path="/registration/creating" element={
         <PublicRoute>
-          <RegistrationSuccess />
+          <CreatingAccount />
         </PublicRoute>
       } />
-      <Route path="/student/*" element={
+      <Route path="/registration/complete" element={
+        <PublicRoute>
+          <RegistrationComplete />
+        </PublicRoute>
+      } />
+      <Route path="/student" element={
         <ProtectedRoute requiredRole="student">
           <StudentDashboard />
         </ProtectedRoute>
       } />
-      <Route path="/admin/*" element={
+      <Route path="/student/exams" element={
+        <ProtectedRoute requiredRole="student">
+          <StudentExams />
+        </ProtectedRoute>
+      } />
+      <Route path="/instructor" element={
+        <ProtectedRoute requiredRole="instructor">
+          <InstructorDashboard />
+        </ProtectedRoute>
+      } />
+      <Route path="/admin" element={
         <ProtectedRoute requiredRole="admin">
           <AdminDashboard />
         </ProtectedRoute>
       } />
+      <Route path="/exam/:examId" element={
+        <ProtectedRoute requiredRole="student">
+          <ExamTaking />
+        </ProtectedRoute>
+      } />
+      <Route path="*" element={<NotFound />} />
     </Routes>
+    </ErrorBoundary>
   );
 }
 

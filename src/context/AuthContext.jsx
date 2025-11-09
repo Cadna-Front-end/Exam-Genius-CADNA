@@ -1,114 +1,164 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { apiClient, API_ENDPOINTS } from "../config/api";
+import { AuthContext } from "./AuthContextDefinition";
 
-const AuthContext = createContext();
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-};
-
-export const AuthProvider = ({ children }) => {
+const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const logout = () => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("userData");
+    localStorage.removeItem("refreshToken");
+    setUser(null);
+  };
+
+  const refreshAuthToken = useCallback(async () => {
     try {
-      const token = localStorage.getItem("authToken");
-      const userData = localStorage.getItem("userData");
+      const storedRefreshToken = localStorage.getItem("refreshToken");
+      if (!storedRefreshToken) return false;
       
-      if (token && userData) {
-        const parsedUser = JSON.parse(userData);
-        if (parsedUser && parsedUser.email && parsedUser.role) {
-          setUser(parsedUser);
-        } else {
-          localStorage.removeItem("authToken");
-          localStorage.removeItem("userData");
+      const response = await apiClient.post('/api/auth/refresh', { refreshToken: storedRefreshToken });
+      if (response.success) {
+        localStorage.setItem("authToken", response.data.accessToken);
+        if (response.data.refreshToken) {
+          localStorage.setItem("refreshToken", response.data.refreshToken);
         }
+        return true;
       }
-    } catch (error) {
-      console.error('Error loading user data:', error);
-      localStorage.removeItem("authToken");
-      localStorage.removeItem("userData");
-    } finally {
-      setLoading(false);
+    } catch {
+      logout();
     }
+    return false;
   }, []);
+
+  const checkTokenExpiration = (token) => {
+    try {
+      // amazonq-ignore-next-line
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const currentTime = Date.now() / 1000;
+      return payload.exp && payload.exp > currentTime;
+    } catch {
+      return false;
+    }
+  };
+
+  useEffect(() => {
+    const initAuth = async () => {
+      try {
+        const token = localStorage.getItem("authToken");
+        const userData = localStorage.getItem("userData");
+        
+        if (token && userData) {
+          // Quick token validation without API call
+          if (checkTokenExpiration(token)) {
+            const parsedUser = JSON.parse(userData);
+            if (parsedUser && parsedUser.email && parsedUser.role) {
+              setUser(parsedUser);
+            } else {
+              logout();
+            }
+          } else {
+            // Token expired, try refresh in background
+            const refreshed = await refreshAuthToken();
+            if (!refreshed) logout();
+          }
+        }
+      } catch {
+        logout();
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    initAuth();
+  }, [refreshAuthToken]);
+
+  useEffect(() => {
+    if (user) {
+      const interval = setInterval(() => {
+        const token = localStorage.getItem("authToken");
+        if (token) {
+          try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const currentTime = Date.now() / 1000;
+            if (payload.exp && payload.exp < currentTime) {
+              logout();
+            }
+          } catch {
+            logout();
+          }
+        }
+      }, 60000); // Check every minute
+      return () => clearInterval(interval);
+    }
+  }, [user]);
 
   const login = async (credentials) => {
     try {
       const response = await apiClient.post(API_ENDPOINTS.LOGIN, credentials);
-      console.log('Login response:', response);
       
-      let token, userData;
-      
-      if (response.token) {
-        token = response.token;
-        userData = response.user || response.data;
-      } else if (response.accessToken) {
-        token = response.accessToken;
-        userData = response.user || response.data;
-      } else if (response.data) {
-        token = response.data.token || response.data.accessToken;
-        userData = response.data.user || response.data;
+      if (!response.success || !response.data) {
+        throw new Error(response.message || 'Login failed');
       }
       
+
+      
+      const { user: userData, accessToken: token, twoFARequired, tempToken } = response.data;
+      
+      // If 2FA is required, store temp token and return 2FA flag
+      if (twoFARequired) {
+        localStorage.setItem("tempToken", tempToken);
+        return { success: true, requiresTwoFA: true };
+      }
+      
+      // Complete login without 2FA
       if (!token || !userData) {
-        throw new Error('Could not find token or user data in response');
+        throw new Error('Invalid response from server');
       }
       
-      // Check if 2FA is enabled for this user
-      if (userData.enableTwoFA) {
-        // Store temporary data for 2FA verification
-        localStorage.setItem("tempAuthToken", token);
-        localStorage.setItem("tempUserData", JSON.stringify(userData));
-        return { success: true, requiresTwoFA: true, userData };
-      }
-      
-      // No 2FA required, complete login
       localStorage.setItem("authToken", token);
       localStorage.setItem("userData", JSON.stringify(userData));
+      if (response.data.refreshToken) {
+        localStorage.setItem("refreshToken", response.data.refreshToken);
+      }
       setUser(userData);
       
-      return { success: true };
+      return { success: true, requiresTwoFA: false };
     } catch (error) {
-      console.error('Login error:', error);
       return { success: false, error: error.message || 'Login failed' };
     }
   };
 
   const verifyTwoFA = async (code) => {
     try {
-      const tempToken = localStorage.getItem("tempAuthToken");
-      const tempUserData = localStorage.getItem("tempUserData");
+      const tempToken = localStorage.getItem("tempToken");
       
-      if (!tempToken || !tempUserData) {
+      if (!tempToken) {
         throw new Error('No pending 2FA verification');
       }
       
-      // Verify 2FA code with backend
-      const response = await apiClient.post('/api/auth/verify-2fa', { code }, {
-        headers: { Authorization: `Bearer ${tempToken}` }
-      });
+      const response = await apiClient.post('/api/auth/verify-2fa-login', { tempToken, code });
       
-      if (response.success) {
-        // 2FA verified, complete login
-        const userData = JSON.parse(tempUserData);
-        localStorage.setItem("authToken", tempToken);
-        localStorage.setItem("userData", tempUserData);
-        localStorage.removeItem("tempAuthToken");
-        localStorage.removeItem("tempUserData");
-        setUser(userData);
-        
-        return { success: true };
-      } else {
-        return { success: false, error: 'Invalid verification code' };
+      if (!response.success) {
+        throw new Error(response.message || '2FA verification failed');
       }
+      
+      const { user: userData, accessToken } = response.data;
+      
+      // Clear temp data
+      localStorage.removeItem("tempToken");
+      
+      // Set authenticated user
+      localStorage.setItem("authToken", accessToken);
+      localStorage.setItem("userData", JSON.stringify(userData));
+      if (response.data.refreshToken) {
+        localStorage.setItem("refreshToken", response.data.refreshToken);
+      }
+      setUser(userData);
+      
+      return { success: true };
     } catch (error) {
-      console.error('2FA verification error:', error);
       return { success: false, error: error.message || '2FA verification failed' };
     }
   };
@@ -116,22 +166,22 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       const response = await apiClient.post(API_ENDPOINTS.REGISTER, userData);
-      return { success: true, data: response };
+      
+      if (!response.success) {
+        throw new Error(response.message || 'Registration failed');
+      }
+      
+      return { success: true, data: response.data };
     } catch (error) {
-      console.error('Registration error:', error);
       return { success: false, error: error.message || 'Registration failed' };
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("userData");
-    setUser(null);
-  };
-
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, verifyTwoFA, loading }}>
+    <AuthContext.Provider value={{ user, login, register, logout, loading, verifyTwoFA }}>
       {children}
     </AuthContext.Provider>
   );
 };
+
+export default AuthProvider;

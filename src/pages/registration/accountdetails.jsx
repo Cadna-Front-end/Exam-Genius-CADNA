@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { CiMail, CiLock } from "react-icons/ci";
+import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 
 const AccountDetails = () => {
   const [formData, setFormData] = useState({
@@ -12,29 +14,42 @@ const AccountDetails = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    if (errors[e.target.name]) {
-      setErrors({ ...errors, [e.target.name]: "" });
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Clear error for this field if it exists
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: "" }));
     }
   };
 
   const validateForm = () => {
     const newErrors = {};
     
-    if (formData.password.length < 8) {
+    // Email validation
+    if (!formData.email || typeof formData.email !== 'string') {
+      newErrors.email = "Email is required";
+    } else {
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(formData.email.trim())) {
+        newErrors.email = "Please enter a valid email address";
+      }
+    }
+    
+    // Password validation
+    if (!formData.password || typeof formData.password !== 'string') {
+      newErrors.password = "Password is required";
+    } else if (formData.password.length < 8) {
       newErrors.password = "Password must be at least 8 characters";
     }
     
-    if (formData.password !== formData.confirmPassword) {
+    // Confirm password validation
+    if (formData.confirmPassword && formData.password && formData.confirmPassword !== formData.password) {
       newErrors.confirmPassword = "Passwords do not match";
-    }
-    
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address";
     }
     
     setErrors(newErrors);
@@ -44,137 +59,209 @@ const AccountDetails = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!validateForm()) return;
-    
-    setLoading(true);
-    
-    localStorage.setItem('registrationData', JSON.stringify({
-      email: formData.email,
-      password: formData.password,
-      userType: formData.userType
-    }));
-    
-    setLoading(false);
-    navigate("/register/personal");
+    try {
+      if (!validateForm()) return;
+      
+      setLoading(true);
+      
+      // Validate and sanitize data before storing
+      if (!formData.email || !formData.password || !formData.userType) {
+        throw new Error('All fields are required');
+      }
+      
+      const registrationData = {
+        email: formData.email.trim().toLowerCase(),
+        password: formData.password,
+        role: formData.userType
+      };
+      
+      localStorage.setItem('registrationData', JSON.stringify(registrationData));
+      
+      setTimeout(() => {
+        setLoading(false);
+        navigate("/register/personal");
+      }, 1000);
+    } catch (error) {
+      setLoading(false);
+      setError(error.message || 'An error occurred. Please try again.');
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-10 bg-white">
-      <div className="absolute top-5 left-5">
-        <img src="/Logo icon.png" alt="Exam Genius" className="w-32 h-auto" />
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-6 bg-white">
+      <div className="absolute top-4 left-4">
+        <button onClick={() => navigate('/')} className="hover:opacity-80 transition-opacity">
+          <img src="/Logo icon.png" alt="Exam Genius" className="w-16 sm:w-20 md:w-24 h-auto cursor-pointer" />
+        </button>
       </div>
 
-      <div className="w-full max-w-2xl">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-[#302711] mb-2">
+      <div className="w-full max-w-sm sm:max-w-md lg:max-w-2xl xl:max-w-3xl mt-20 sm:mt-24">
+        <div className="text-center mb-6 lg:mb-8">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-Poppins font-bold text-[#302711] mb-2">
             Create New Account
           </h1>
-          <p className="text-gray-600 mb-6">Join the future of AI-powered assessment.</p>
+          <p className="text-sm lg:text-base text-gray-600 mb-6 lg:mb-8">Join the future of AI-powered assessment.</p>
+          
+          {/* Progress Steps */}
+          <div className="flex justify-center items-center space-x-4 sm:space-x-8 lg:space-x-12 mb-6 lg:mb-8">
+            <div className="flex flex-col items-center">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-[#3B82F6] text-white rounded-full flex items-center justify-center font-semibold mb-2 text-sm lg:text-base">
+                1
+              </div>
+              <span className="text-xs sm:text-sm lg:text-base font-medium text-[#3B82F6]">Account Details</span>
+            </div>
+            <div className="w-12 sm:w-16 lg:w-20 h-0.5 bg-gray-300"></div>
+            <div className="flex flex-col items-center">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-gray-300 text-gray-500 rounded-full flex items-center justify-center font-semibold mb-2 text-sm lg:text-base">
+                2
+              </div>
+              <span className="text-xs sm:text-sm lg:text-base text-gray-500">Personal Info</span>
+            </div>
+            <div className="w-12 sm:w-16 lg:w-20 h-0.5 bg-gray-300"></div>
+            <div className="flex flex-col items-center">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-gray-300 text-gray-500 rounded-full flex items-center justify-center font-semibold mb-2 text-sm lg:text-base">
+                3
+              </div>
+              <span className="text-xs sm:text-sm lg:text-base text-gray-500">Security</span>
+            </div>
+          </div>
         </div>
 
-        <div className="bg-[#D9F5FF] rounded-[30px] p-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6 text-center">Account Details</h2>
+        <div className="bg-[#D9F5FF] rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-12">
+          <h2 className="text-lg sm:text-xl lg:text-3xl font-semibold text-gray-900 mb-6 lg:mb-10 text-center">Account Details</h2>
           
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-4 lg:space-y-8">
+            {error && (
+              <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-red-600 text-sm">{error}</p>
+              </div>
+            )}
+            
+            {/* Account Type Selection */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm lg:text-lg font-medium text-gray-700 mb-3 lg:mb-4">
                 Account Type
               </label>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6">
                 <button
                   type="button"
-                  onClick={() => setFormData({ ...formData, userType: "student" })}
-                  className={`p-4 border rounded-lg text-center ${
-                    formData.userType === "student"
-                      ? "border-[#3B82F6] bg-blue-50 text-[#3B82F6]"
-                      : "border-gray-300 hover:bg-gray-50"
+                  onClick={() => setFormData(prev => ({ ...prev, userType: "student" }))}
+                  className={`p-4 lg:p-8 border rounded-lg text-center transition-colors ${
+                    formData.userType === "student" ? 'border-[#3B82F6] bg-blue-50 text-[#3B82F6]' : 'border-gray-300 hover:bg-gray-50'
                   }`}
                 >
-                  <div className="font-medium">Student</div>
-                  <div className="text-sm text-gray-500">Take exams and view results</div>
+                  <div className="font-medium lg:text-xl">Student</div>
+                  <div className="text-sm lg:text-base text-gray-500 mt-1">Take exams and view results</div>
                 </button>
                 <button
                   type="button"
-                  onClick={() => setFormData({ ...formData, userType: "instructor" })}
-                  className={`p-4 border rounded-lg text-center ${
-                    formData.userType === "instructor"
-                      ? "border-[#3B82F6] bg-blue-50 text-[#3B82F6]"
-                      : "border-gray-300 hover:bg-gray-50"
+                  onClick={() => setFormData(prev => ({ ...prev, userType: "instructor" }))}
+                  className={`p-4 lg:p-8 border rounded-lg text-center transition-colors ${
+                    formData.userType === "instructor" ? 'border-[#3B82F6] bg-blue-50 text-[#3B82F6]' : 'border-gray-300 hover:bg-gray-50'
                   }`}
                 >
-                  <div className="font-medium">Instructor</div>
-                  <div className="text-sm text-gray-500">Create and manage exams</div>
+                  <div className="font-medium lg:text-xl">Instructor</div>
+                  <div className="text-sm lg:text-base text-gray-500 mt-1">Create and manage exams</div>
                 </button>
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            {/* Email Address */}
+            <div className="relative">
+              <label className="block text-sm lg:text-lg font-medium text-gray-700 mb-3">
                 Email Address
               </label>
+              <div className="absolute left-4 top-12 lg:top-14 transform translate-y-1/2 text-gray-500">
+                <CiMail size={20} />
+              </div>
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className={`w-full h-12 px-3 bg-white border rounded-lg focus:outline-none focus:ring-2 ${
-                  errors.email ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-[#3B82F6]"
+                className={`w-full h-12 lg:h-16 pl-12 pr-4 text-sm lg:text-base bg-white border rounded-lg focus:outline-none focus:ring-2 ${
+                  errors.email ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-[#3B82F6]'
                 }`}
+                placeholder="Enter your email"
                 required
               />
-              {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+              {errors.email && <p className="text-red-500 text-sm lg:text-base mt-2">{errors.email}</p>}
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            {/* Password */}
+            <div className="relative">
+              <label className="block text-sm lg:text-lg font-medium text-gray-700 mb-3">
                 Password
               </label>
+              <div className="absolute left-4 top-12 lg:top-14 transform translate-y-1/2 text-gray-500">
+                <CiLock size={20} />
+              </div>
+              <div
+                className="absolute right-4 top-12 lg:top-14 transform translate-y-1/2 text-gray-500 cursor-pointer"
+                onClick={() => setShowPassword(prev => !prev)}
+              >
+                {showPassword ? <IoEyeOffOutline size={20} /> : <IoEyeOutline size={20} />}
+              </div>
               <input
                 type={showPassword ? "text" : "password"}
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className={`w-full h-12 px-3 bg-white border rounded-lg focus:outline-none focus:ring-2 ${
-                  errors.password ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-[#3B82F6]"
+                className={`w-full h-12 lg:h-16 pl-12 pr-12 text-sm lg:text-base bg-white border rounded-lg focus:outline-none focus:ring-2 ${
+                  errors.password ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-[#3B82F6]'
                 }`}
+                placeholder="Enter your password"
                 required
               />
-              {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
+              {errors.password && <p className="text-red-500 text-sm lg:text-base mt-2">{errors.password}</p>}
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            {/* Confirm Password */}
+            <div className="relative">
+              <label className="block text-sm lg:text-lg font-medium text-gray-700 mb-3">
                 Confirm Password
               </label>
+              <div className="absolute left-4 top-12 lg:top-14 transform translate-y-1/2 text-gray-500">
+                <CiLock size={20} />
+              </div>
+              <div
+                className="absolute right-4 top-12 lg:top-14 transform translate-y-1/2 text-gray-500 cursor-pointer"
+                onClick={() => setShowConfirmPassword(prev => !prev)}
+              >
+                {showConfirmPassword ? <IoEyeOffOutline size={20} /> : <IoEyeOutline size={20} />}
+              </div>
               <input
                 type={showConfirmPassword ? "text" : "password"}
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                className={`w-full h-12 px-3 bg-white border rounded-lg focus:outline-none focus:ring-2 ${
-                  errors.confirmPassword ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-[#3B82F6]"
+                className={`w-full h-12 lg:h-16 pl-12 pr-12 text-sm lg:text-base bg-white border rounded-lg focus:outline-none focus:ring-2 ${
+                  errors.confirmPassword ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-[#3B82F6]'
                 }`}
+                placeholder="Confirm your password"
                 required
               />
-              {errors.confirmPassword && <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>}
+              {errors.confirmPassword && <p className="text-red-500 text-sm lg:text-base mt-2">{errors.confirmPassword}</p>}
             </div>
 
-            <div className="flex items-start space-x-3 p-4 border border-gray-200 rounded-lg bg-white">
+            {/* Terms Agreement */}
+            <div className="flex items-start space-x-4 p-4 lg:p-6 border border-gray-200 rounded-lg bg-white">
               <input
                 type="checkbox"
                 required
-                className="mt-1 w-4 h-4 text-[#3B82F6] border-gray-300 rounded focus:ring-[#3B82F6]"
+                className="mt-1 w-4 h-4 lg:w-5 lg:h-5 text-[#3B82F6] border-gray-300 rounded focus:ring-[#3B82F6]"
               />
-              <p className="text-sm text-gray-600">
-                Agree to Terms & Privacy
+              <p className="text-sm lg:text-base text-gray-600">
+                I agree to the Terms of Service and Privacy Policy
               </p>
             </div>
 
-            <div className="flex justify-center">
+            {/* Submit Button */}
+            <div className="flex justify-center pt-4">
               <button
                 type="submit"
                 disabled={loading}
-                className="px-12 py-3 bg-[#3B82F6] text-white rounded-lg hover:bg-[#2D6AC9] disabled:opacity-50 font-medium"
+                className="w-full sm:w-auto px-8 sm:px-12 lg:px-20 py-3 lg:py-5 bg-[#3B82F6] text-white rounded-lg hover:bg-[#2D6AC9] disabled:opacity-50 font-medium text-sm lg:text-lg transition-colors"
               >
                 {loading ? "Processing..." : "Next"}
               </button>
@@ -182,8 +269,8 @@ const AccountDetails = () => {
           </form>
         </div>
 
-        <div className="text-center mt-6">
-          <p className="text-sm text-gray-600">
+        <div className="text-center mt-6 lg:mt-8">
+          <p className="text-sm lg:text-base text-gray-600">
             Already have an account?{" "}
             <button
               type="button"

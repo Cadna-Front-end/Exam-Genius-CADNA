@@ -1,17 +1,23 @@
-import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContextDefinition";
 
 const TwoFactorAuth = () => {
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const location = useLocation();
-  const { verifyTwoFA } = useAuth();
+  const { verifyTwoFA } = useContext(AuthContext);
 
-  // Get user data from location state or localStorage
-  const userData = location.state?.userData || JSON.parse(localStorage.getItem('userData') || '{}');
+  // Check if we have a temp token for 2FA
+  const tempToken = localStorage.getItem('tempToken');
+  
+  // Redirect to signin if no temp token
+  if (!tempToken) {
+    console.warn('No temp token found for 2FA verification');
+    navigate('/signin');
+    return null;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,14 +34,16 @@ const TwoFactorAuth = () => {
       const result = await verifyTwoFA(code);
       
       if (result.success) {
-        // Redirect to appropriate dashboard
-        const redirectPath = userData?.role === 'admin' ? '/admin' : '/student';
+        // Get user data from localStorage after successful verification
+        const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+        const redirectPath = userData?.role === 'instructor' ? '/instructor' : '/student';
         navigate(redirectPath);
       } else {
         setError(result.error || "Invalid verification code");
       }
     } catch (error) {
-      setError("Verification failed. Please try again.");
+      console.error('2FA verification error:', error);
+      setError(error.message || "Verification failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -43,14 +51,15 @@ const TwoFactorAuth = () => {
 
   const handleResendCode = async () => {
     setError("");
-    // Simulate resending code
     alert("Verification code sent to your registered email/phone");
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-white">
       <div className="absolute top-5 left-5">
-        <img src="/Logo icon.png" alt="Exam Genius" className="w-32 h-auto" />
+        <button onClick={() => navigate('/')} className="hover:opacity-80 transition-opacity">
+          <img src="/Logo icon.png" alt="Exam Genius" className="w-32 h-auto cursor-pointer" />
+        </button>
       </div>
 
       <div className="w-full max-w-md">
