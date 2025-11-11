@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { IoShieldCheckmarkOutline, IoDocumentTextOutline } from "react-icons/io5";
 import { useContext } from "react";
-import { AuthContext } from "../../context/AuthContextDefinition";
+import { AuthContext } from "../../context/AuthContextDefinition.js";
 
 const SecurityAndFinalize = () => {
   const { register } = useContext(AuthContext);

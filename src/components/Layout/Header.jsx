@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { IoNotificationsOutline, IoPersonOutline, IoMenuOutline } from "react-icons/io5";
+import { IoNotificationsOutline, IoPersonOutline, IoMenuOutline, IoMoonOutline } from "react-icons/io5";
 import { useContext } from "react";
-import { AuthContext } from "../../context/AuthContextDefinition";
+import { AuthContext } from "../../context/AuthContextDefinition.js";
 
 const Header = ({ onMenuToggle, title }) => {
   const [showProfile, setShowProfile] = useState(false);
@@ -54,7 +54,7 @@ const Header = ({ onMenuToggle, title }) => {
               {title || "Dashboard"}
             </h1>
           </div>
-          <div className="hidden lg:block" style={{paddingLeft: '10rem'}}>
+          <div className="hidden lg:block lg:ml-64">
             <h1 className="text-lg font-Poppins font-semibold text-[#302711]">
               {title || "Dashboard"}
             </h1>
@@ -62,6 +62,10 @@ const Header = ({ onMenuToggle, title }) => {
         </div>
 
         <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
+          <button className="p-2 rounded-full border border-gray-300 hover:bg-gray-100">
+            <IoMoonOutline size={20} />
+          </button>
+          
           <button className="p-2 rounded-full border border-gray-300 hover:bg-gray-100 relative">
             <IoNotificationsOutline size={20} />
             <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center transform translate-x-1 -translate-y-1">

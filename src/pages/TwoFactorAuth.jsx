@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthContextDefinition";
+import { AuthContext } from "../context/AuthContextDefinition.js";
 
 const TwoFactorAuth = () => {
   const [code, setCode] = useState("");

@@ -11,7 +11,7 @@ import {
   IoLogOutOutline
 } from "react-icons/io5";
 import { useContext } from "react";
-import { AuthContext } from "../../context/AuthContextDefinition";
+import { AuthContext } from "../../context/AuthContextDefinition.js";
 
 const Sidebar = ({ isOpen, userRole = "student", onClose }) => {
   const { logout } = useContext(AuthContext);
@@ -56,7 +56,7 @@ const Sidebar = ({ isOpen, userRole = "student", onClose }) => {
       {/* Sidebar */}
       <aside 
         className={`
-          fixed inset-y-0 left-0 z-50
+          fixed top-16 bottom-0 left-0 z-30
           bg-blue-500 shadow-lg border-r border-blue-600
           transition-transform duration-300 ease-in-out
           w-64
@@ -87,7 +87,7 @@ const Sidebar = ({ isOpen, userRole = "student", onClose }) => {
           </div>
         </div>
         
-        <nav className="space-y-2 flex-1 overflow-y-auto h-full flex flex-col pt-16">
+        <nav className="space-y-2 flex-1 overflow-y-auto h-full flex flex-col pt-4">
           <div className="flex-1">
             {links.map(({ to, icon: Icon, label }) => {
               const isActive = location.pathname === to || (to !== `/${userRole}` && location.pathname.startsWith(to));

@@ -1,7 +1,7 @@
 import { useState, useContext } from "react";
 import Header from "../../components/Layout/Header";
 import Sidebar from "../../components/Layout/Sidebar";
-import { AuthContext } from "../../context/AuthContextDefinition";
+import { AuthContext } from "../../context/AuthContextDefinition.js";
 import { IoPeopleOutline, IoDocumentTextOutline, IoStatsChartOutline, IoCheckmarkCircleOutline } from "react-icons/io5";
 
 const ActivityItem = ({ activity }) => {

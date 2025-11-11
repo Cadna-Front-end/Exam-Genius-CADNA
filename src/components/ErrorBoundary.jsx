@@ -1,6 +1,9 @@
 import { Component } from 'react';
+import { AuthContext } from '../context/AuthContextDefinition.js';
 
 class ErrorBoundary extends Component {
+  static contextType = AuthContext;
+  
   constructor(props) {
     super(props);
     this.state = { hasError: false, error: null };
@@ -16,6 +19,15 @@ class ErrorBoundary extends Component {
 
   handleRefresh = () => {
     window.location.reload();
+  };
+  
+  handleGoHome = () => {
+    const user = this.context?.user;
+    if (user) {
+      window.location.href = user.role === 'admin' ? '/admin' : '/student';
+    } else {
+      window.location.href = '/';
+    }
   };
 
   render() {
@@ -39,12 +51,20 @@ class ErrorBoundary extends Component {
               An unexpected error occurred. Please refresh the page or try again later.
             </p>
             
-            <button
-              onClick={this.handleRefresh}
-              className="px-6 py-3 bg-[#3B82F6] text-white rounded-lg hover:bg-[#2D6AC9]"
-            >
-              Refresh Page
-            </button>
+            <div className="space-x-4">
+              <button
+                onClick={this.handleRefresh}
+                className="px-6 py-3 bg-[#3B82F6] text-white rounded-lg hover:bg-[#2D6AC9]"
+              >
+                Refresh Page
+              </button>
+              <button
+                onClick={this.handleGoHome}
+                className="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+              >
+                Go Home
+              </button>
+            </div>
           </div>
         </div>
       );
