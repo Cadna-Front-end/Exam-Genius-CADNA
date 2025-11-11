@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { IoNotificationsOutline, IoPersonOutline, IoMenuOutline, IoMoonOutline } from "react-icons/io5";
 import { useContext } from "react";
-import { AuthContext } from "../../context/AuthContextDefinition";
+import { AuthContext } from "../../context/AuthContextDefinition.js";
 
 const Header = ({ onMenuToggle, title }) => {
   const [showProfile, setShowProfile] = useState(false);

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useContext } from "react";
-import { AuthContext } from "../../context/AuthContextDefinition";
+import { AuthContext } from "../../context/AuthContextDefinition.js";
 import { 
   FiCheckCircle, 
   FiTrendingUp, 

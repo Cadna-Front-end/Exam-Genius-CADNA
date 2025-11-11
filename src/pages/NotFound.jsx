@@ -1,7 +1,18 @@
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContextDefinition.js";
 
 const NotFound = () => {
   const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
+  
+  const handleGoHome = () => {
+    if (user) {
+      navigate(user.role === 'admin' ? '/admin' : '/student');
+    } else {
+      navigate('/');
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-white">
@@ -26,7 +37,7 @@ const NotFound = () => {
             Go Back
           </button>
           <button
-            onClick={() => navigate("/")}
+            onClick={handleGoHome}
             className="px-6 py-3 bg-[#3B82F6] text-white rounded-lg hover:bg-[#2D6AC9]"
           >
             Go Home

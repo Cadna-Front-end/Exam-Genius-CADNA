@@ -1,17 +1,43 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useContext } from "react";
-import { AuthContext } from "../../context/AuthContextDefinition";
+import { AuthContext } from "../../context/AuthContextDefinition.js";
+import { apiClient, API_ENDPOINTS } from "../../config/api";
 import ActiveExams from "./ActiveExams";
 import EmptyExams from "./EmptyExams";
 import Header from "../../components/Layout/Header";
 import Sidebar from "../../components/Layout/Sidebar";
+import Loading from "../../components/UI/Loading";
 
 const StudentExams = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [exams, setExams] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const { user } = useContext(AuthContext);
   
+  useEffect(() => {
+    const fetchExams = async () => {
+      try {
+        const response = await apiClient.get(API_ENDPOINTS.EXAMS);
+        if (response.success) {
+          setExams(Array.isArray(response.data) ? response.data : []);
+        } else {
+          setError("Failed to load exams");
+        }
+      } catch (error) {
+        setError("Error loading exams");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchExams();
+  }, []);
+  
   // Automatically detect if user has exams
-  const hasExams = user?.availableExams > 0 || user?.upcomingExams > 0 || false;
+  const hasExams = Array.isArray(exams) && exams.length > 0;
+  
+  if (loading) return <Loading />;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -35,8 +61,14 @@ const StudentExams = () => {
           </div>
         </div>
 
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-600">{error}</p>
+          </div>
+        )}
+        
         {hasExams ? (
-          <ActiveExams user={user} />
+          <ActiveExams user={user} exams={exams} />
         ) : (
           <EmptyExams user={user} />
         )}

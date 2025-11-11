@@ -11,7 +11,7 @@ import {
   IoLogOutOutline
 } from "react-icons/io5";
 import { useContext } from "react";
-import { AuthContext } from "../../context/AuthContextDefinition";
+import { AuthContext } from "../../context/AuthContextDefinition.js";
 
 const Sidebar = ({ isOpen, userRole = "student", onClose }) => {
   const { logout } = useContext(AuthContext);

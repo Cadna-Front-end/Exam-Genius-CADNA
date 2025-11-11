@@ -3,7 +3,7 @@ import { CiMail, CiLock } from "react-icons/ci";
 import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 import { IoIosCheckboxOutline } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../../context/AuthContextDefinition";
+import { AuthContext } from "../../context/AuthContextDefinition.js";
 
 const Signin = () => {
   const [email, setEmail] = useState("");

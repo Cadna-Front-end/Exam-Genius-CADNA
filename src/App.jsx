@@ -11,7 +11,7 @@ import StudentDashboard from "./dashboards/studentdashboard/StudentDashboard.jsx
 import InstructorDashboard from "./dashboards/instructordashboard/InstructorDashboard.jsx";
 import AdminDashboard from "./dashboards/admindashboard/AdminDashboard.jsx";
 import ExamTaking from "./pages/ExamTaking.jsx";
-import StudentExams from "./pages/StudentExams.jsx";
+import StudentExams from "./pages/studentexams/StudentExams.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import PublicRoute from "./components/PublicRoute.jsx";
 import ErrorBoundary from "./components/ErrorBoundary.jsx";
