@@ -1,12 +1,15 @@
 import { Routes, Route } from "react-router-dom";
-import Signin from "./pages/signin/signin.jsx";
-import Emptystate from './dashboards/instructordashboards/emptystate';
+import CreateExamPage from "./dashboards/instructor-dashboards/CreateExamPage";
+import ExamSettingsPage from "./dashboards/instructor-dashboards/ExamSettingsPage";
+import Dashboard from "./dashboards/instructor-dashboards/Dashboard";
 
 function App() {
   return (
     <Routes>
-      <Route path="/signin" element={<Signin />} />
-      <Route path="emptystate" element={<Emptystate/> } />
+      <Route path="/" element={<Dashboard />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/create-exam" element={<CreateExamPage />} />
+      <Route path="/exam-settings" element={<ExamSettingsPage />} />
     </Routes>
   );
 }
