@@ -5,6 +5,9 @@ import { IoNotificationsOutline, IoPersonOutline, IoMenuOutline, IoMoonOutline }
 =======
 import { IoNotificationsOutline, IoPersonOutline, IoMenuOutline } from "react-icons/io5";
 import { HiOutlineMoon, HiOutlineSun } from "react-icons/hi";
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContextDefinition.js";
@@ -68,13 +71,19 @@ const Header = ({ onMenuToggle, title, darkMode, onDarkModeToggle }) => {
             </h1>
           </div>
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
           <div className="hidden lg:block lg:ml-64">
             <h1 className="text-lg font-Poppins font-semibold text-[#302711]">
 =======
+=======
+>>>>>>> Stashed changes
           <div className="hidden lg:block" style={{paddingLeft: '10rem'}}>
             <h1 className={`text-lg font-Poppins font-semibold ${
               darkMode ? "text-white" : "text-[#302711]"
             }`}>
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
               {title || "Dashboard"}
             </h1>
@@ -83,17 +92,23 @@ const Header = ({ onMenuToggle, title, darkMode, onDarkModeToggle }) => {
 
         <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
           <button className="p-2 rounded-full border border-gray-300 hover:bg-gray-100">
             <IoMoonOutline size={20} />
           </button>
           
           <button className="p-2 rounded-full border border-gray-300 hover:bg-gray-100 relative">
 =======
+=======
+>>>>>>> Stashed changes
           <button className={`p-2 rounded-full border relative ${
             darkMode 
               ? "border-gray-600 hover:bg-gray-700 text-white" 
               : "border-gray-300 hover:bg-gray-100 text-gray-700"
           }`}>
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
             <IoNotificationsOutline size={20} />
             <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center transform translate-x-1 -translate-y-1">
