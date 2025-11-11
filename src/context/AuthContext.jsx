@@ -26,7 +26,12 @@ const AuthProvider = ({ children }) => {
         }
         return true;
       }
-    } catch {
+    } catch (error) {
+      console.error('AuthContext: Token refresh failed', {
+        timestamp: new Date().toISOString(),
+        error: error.message || 'Unknown error',
+        hasRefreshToken: !!localStorage.getItem("refreshToken")
+      });
       logout();
     }
     return false;

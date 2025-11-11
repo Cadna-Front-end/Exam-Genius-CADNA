@@ -8,7 +8,8 @@ import SecurityAndFinalize from "./pages/registration/securityandfinalize.jsx";
 import CreatingAccount from "./pages/registration/CreatingAccount.jsx";
 import RegistrationComplete from "./pages/registration/RegistrationComplete.jsx";
 import StudentDashboard from "./dashboards/studentdashboard/StudentDashboard.jsx";
-import InstructorDashboard from "./dashboards/instructordashboard/InstructorDashboard.jsx";
+import InstructorDashboard from "./dashboards/instructor-dashboards/Dashboard.jsx";
+import CreateExamPage from "./dashboards/instructor-dashboards/CreateExamPage.jsx";
 import AdminDashboard from "./dashboards/admindashboard/AdminDashboard.jsx";
 import ExamTaking from "./pages/ExamTaking.jsx";
 import StudentExams from "./pages/studentexams/StudentExams.jsx";
@@ -70,6 +71,11 @@ function App() {
       <Route path="/instructor" element={
         <ProtectedRoute requiredRole="instructor">
           <InstructorDashboard />
+        </ProtectedRoute>
+      } />
+      <Route path="/create-exam" element={
+        <ProtectedRoute requiredRole="instructor">
+          <CreateExamPage />
         </ProtectedRoute>
       } />
       <Route path="/admin" element={

@@ -14,7 +14,25 @@ class ErrorBoundary extends Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error('Error caught by boundary:', error, errorInfo);
+    const errorDetails = {
+      timestamp: new Date().toISOString(),
+      error: {
+        name: error.name,
+        message: error.message,
+        stack: error.stack
+      },
+      errorInfo,
+      userAgent: navigator.userAgent,
+      url: window.location.href
+    };
+    
+    console.error('Error caught by boundary:', errorDetails);
+    
+    // Log to external service in production
+    if (process.env.NODE_ENV === 'production') {
+      // Replace with actual error reporting service
+      console.error('Production error:', JSON.stringify(errorDetails));
+    }
   }
 
   handleRefresh = () => {

@@ -3,42 +3,43 @@ import { RxDashboard } from "react-icons/rx";
 import { TfiWrite } from "react-icons/tfi";
 import { TbMessageQuestion } from "react-icons/tb";
 import { FiClipboard, FiBarChart2, FiSettings, FiLogOut } from "react-icons/fi";
-import { useState } from "react"; // Added for logout confirmation
+import { useState, useContext } from "react";
+import { AuthContext } from "../../context/AuthContextDefinition";
 
 export default function Sidebar({ darkMode = false, isMobile = false }) {
   const navigate = useNavigate();
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false); // Logout confirmation state
+  const { logout } = useContext(AuthContext);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const menu = [
-    { name: "Dashboard", icon: <RxDashboard />, link: "/dashboard/instructor" },
+    { name: "Dashboard", icon: <RxDashboard />, link: "/instructor" },
     {
-      name: "Exams",
+      name: "Create Exam",
       icon: <TfiWrite />,
-      link: "/dashboard/instructor/exams",
+      link: "/create-exam",
     },
     {
       name: "Question Bank",
       icon: <TbMessageQuestion />,
-      link: "/dashboard/instructor/questions",
+      link: "/instructor/questions",
     },
     {
       name: "Analytics",
       icon: <FiBarChart2 />,
-      link: "/dashboard/instructor/analytics",
+      link: "/instructor/analytics",
     },
     {
       name: "Settings",
       icon: <FiSettings />,
-      link: "/dashboard/instructor/settings",
+      link: "/instructor/settings",
     },
   ];
 
   // Enhanced logout handler with confirmation
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
-    alert("Logged out successfully!");
-    navigate("/login");
+    logout();
+    navigate("/signin");
+    setShowLogoutConfirm(false);
   };
 
   const handleLogoutClick = () => {
@@ -61,20 +62,8 @@ export default function Sidebar({ darkMode = false, isMobile = false }) {
           : "bg-[#3B82F6] text-white"
       }`}
     >
-      {/* Logo/Brand Area */}
-      <div className="p-6 text-xl font-normal text-[18px] font-intel tracking-wide">
-        <div
-          className={`text-center ${
-            isMobile && !darkMode ? "text-blue-600" : "text-white"
-          }`}
-        >
-          <h2 className="font-bold text-lg">Exam Genius</h2>
-          <p className="text-xs opacity-80">Instructor Portal</p>
-        </div>
-      </div>
-
       {/* Navigation Menu */}
-      <nav className="flex-1 px-4 space-y-2">
+      <nav className="flex-1 px-4 pt-6 space-y-2">
         {menu.map((item) => (
           <NavLink
             key={item.name}

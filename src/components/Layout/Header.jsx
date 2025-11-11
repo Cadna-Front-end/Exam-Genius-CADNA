@@ -1,10 +1,15 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
+<<<<<<< Updated upstream
 import { IoNotificationsOutline, IoPersonOutline, IoMenuOutline, IoMoonOutline } from "react-icons/io5";
+=======
+import { IoNotificationsOutline, IoPersonOutline, IoMenuOutline } from "react-icons/io5";
+import { HiOutlineMoon, HiOutlineSun } from "react-icons/hi";
+>>>>>>> Stashed changes
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContextDefinition.js";
 
-const Header = ({ onMenuToggle, title }) => {
+const Header = ({ onMenuToggle, title, darkMode, onDarkModeToggle }) => {
   const [showProfile, setShowProfile] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
@@ -35,12 +40,18 @@ const Header = ({ onMenuToggle, title }) => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 bg-white shadow-sm border-b border-gray-200 px-3 sm:px-4 lg:px-6 py-3">
+    <header className={`fixed top-0 left-0 right-0 z-40 shadow-sm border-b px-3 sm:px-4 lg:px-6 py-3 ${
+      darkMode 
+        ? "bg-gray-800 border-gray-700" 
+        : "bg-white border-gray-200"
+    }`}>
       <div className="flex items-center justify-between">
         <div className="flex items-center min-w-0 flex-1">
           <button
             onClick={onMenuToggle}
-            className="lg:hidden p-2 rounded-md hover:bg-gray-100 flex-shrink-0 mr-3"
+            className={`lg:hidden p-2 rounded-md flex-shrink-0 mr-3 ${
+              darkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
+            }`}
           >
             <IoMenuOutline size={20} />
           </button>
@@ -50,43 +61,83 @@ const Header = ({ onMenuToggle, title }) => {
             </button>
           </div>
           <div className="lg:hidden">
-            <h1 className="text-lg font-Poppins font-semibold text-[#302711]">
+            <h1 className={`text-lg font-Poppins font-semibold ${
+              darkMode ? "text-white" : "text-[#302711]"
+            }`}>
               {title || "Dashboard"}
             </h1>
           </div>
+<<<<<<< Updated upstream
           <div className="hidden lg:block lg:ml-64">
             <h1 className="text-lg font-Poppins font-semibold text-[#302711]">
+=======
+          <div className="hidden lg:block" style={{paddingLeft: '10rem'}}>
+            <h1 className={`text-lg font-Poppins font-semibold ${
+              darkMode ? "text-white" : "text-[#302711]"
+            }`}>
+>>>>>>> Stashed changes
               {title || "Dashboard"}
             </h1>
           </div>
         </div>
 
         <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
+<<<<<<< Updated upstream
           <button className="p-2 rounded-full border border-gray-300 hover:bg-gray-100">
             <IoMoonOutline size={20} />
           </button>
           
           <button className="p-2 rounded-full border border-gray-300 hover:bg-gray-100 relative">
+=======
+          <button className={`p-2 rounded-full border relative ${
+            darkMode 
+              ? "border-gray-600 hover:bg-gray-700 text-white" 
+              : "border-gray-300 hover:bg-gray-100 text-gray-700"
+          }`}>
+>>>>>>> Stashed changes
             <IoNotificationsOutline size={20} />
             <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center transform translate-x-1 -translate-y-1">
               3
             </span>
           </button>
 
+          {onDarkModeToggle && (
+            <button
+              onClick={onDarkModeToggle}
+              className={`p-2 rounded-full border ${
+                darkMode 
+                  ? "border-gray-600 hover:bg-gray-700 text-white" 
+                  : "border-gray-300 hover:bg-gray-100 text-gray-700"
+              }`}
+            >
+              {darkMode ? <HiOutlineSun size={20} /> : <HiOutlineMoon size={20} />}
+            </button>
+          )}
+
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setShowProfile(!showProfile)}
-              className="p-2 rounded-full border border-gray-300 hover:bg-gray-100"
+              className={`p-2 rounded-full border ${
+                darkMode 
+                  ? "border-gray-600 hover:bg-gray-700 text-white" 
+                  : "border-gray-300 hover:bg-gray-100 text-gray-700"
+              }`}
             >
               <IoPersonOutline size={20} />
             </button>
 
             {showProfile && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border z-50">
+              <div className={`absolute right-0 mt-2 w-48 rounded-md shadow-lg border z-50 ${
+                darkMode 
+                  ? "bg-gray-800 border-gray-700" 
+                  : "bg-white border-gray-200"
+              }`}>
                 <div className="py-1">
                   <button
                     onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                    className={`block w-full text-left px-4 py-2 text-sm text-red-600 ${
+                      darkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
+                    }`}
                   >
                     Logout
                   </button>

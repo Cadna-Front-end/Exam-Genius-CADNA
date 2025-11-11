@@ -46,7 +46,7 @@ export default function StatCard({
       } ${
         onClick
           ? "cursor-pointer hover:shadow-md hover:scale-[1.02] " +
-            (darkMode ? "hover:bg-gray-750" : "hover:bg-gray-50")
+            (darkMode ? "hover:bg-gray-700" : "hover:bg-gray-50")
           : ""
       }`}
       onClick={onClick}

@@ -3,7 +3,7 @@ export default function EmptyState({ darkMode = false }) {
   return (
     <div className="flex flex-col items-center justify-center text-center py-12">
       <div className="text-6xl mb-5">
-        <img src="Brazuca Chart.png" alt="" className="w-[208px] h-[210px]" />
+        <img src="/Brazuca Chart.png" alt="" className="w-[208px] h-[210px]" />
       </div>
 
       {/* CHANGED: Added dark mode text colors */}

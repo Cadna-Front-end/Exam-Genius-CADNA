@@ -96,7 +96,7 @@ export default function CreateExamPage() {
           <div className="flex items-center gap-4">
             {/* FIXED BACK BUTTON - Changed from -1 to "/dashboard" */}
             <button
-              onClick={() => navigate("/dashboard")}
+              onClick={() => navigate("/instructor")}
               className={`p-2 rounded-lg border transition-colors ${
                 darkMode
                   ? "border-gray-600 text-gray-300 hover:bg-gray-700"

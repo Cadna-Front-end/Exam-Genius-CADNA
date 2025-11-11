@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContextDefinition.js";
 import Sidebar from "./Sidebar";
 import { GoMoon } from "react-icons/go";
 import { PiBellThin } from "react-icons/pi";
@@ -14,6 +15,7 @@ export default function InstructorLayout({
   onDarkModeToggle,
 }) {
   const navigate = useNavigate();
+  const { user, logout } = useContext(AuthContext);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -71,22 +73,12 @@ export default function InstructorLayout({
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    alert("Logged out successfully!");
+    logout();
     navigate("/signin");
   };
 
   // Safely get username
-  let userName = "User";
-  try {
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    if (storedUser && storedUser.name) {
-      userName = storedUser.name;
-    }
-  } catch (error) {
-    console.warn("Invalid user JSON in localStorage");
-    localStorage.removeItem("user");
-  }
+  const userName = user?.firstName || user?.name || "Instructor";
 
   return (
     <div
