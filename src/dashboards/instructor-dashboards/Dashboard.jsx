@@ -14,7 +14,7 @@ import { IoClose } from "react-icons/io5";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { user, logout } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
   // Safely get username
   const userName = user?.firstName || user?.name || "Instructor";
