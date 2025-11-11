@@ -79,7 +79,7 @@ const Signin = () => {
       {/*  Company Logo (Fixed top-left, spaced properly) */}
       <div className="absolute top-5 left-5">
         <img
-          src="Logo icon.png"
+          src="/Logo icon.png"
           alt="Company Logo"
           className="w-[130px] sm:w-[160px] md:w-[200px] lg:w-[230px]"
         />
