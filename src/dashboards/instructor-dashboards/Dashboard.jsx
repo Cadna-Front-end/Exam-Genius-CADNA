@@ -44,10 +44,6 @@ export default function Dashboard() {
     };
   }, [isMobile]);
 
-
-
-
-
   const stats = [
     { title: "My Exams", value: testExamCount, icon: <TfiWrite />, color: "bg-[#EFF6FF]" },
     {
@@ -87,8 +83,6 @@ export default function Dashboard() {
       document.documentElement.classList.remove("dark");
     }
   };
-
-
 
   if (loading) {
     return (
