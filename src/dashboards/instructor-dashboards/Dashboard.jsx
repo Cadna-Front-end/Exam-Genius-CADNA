@@ -22,7 +22,12 @@ export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
   const [loading, setLoading] = useState(true);
-  const [testExamCount, setTestExamCount] = useState(0);
+  const [dashboardData, setDashboardData] = useState({
+    myExams: 0,
+    ongoingExams: 0,
+    resultSummary: 0,
+    malpracticeAlerts: 0
+  });
 
   useEffect(() => {
     const handleResize = () => {
@@ -33,41 +38,63 @@ export default function Dashboard() {
     };
 
     window.addEventListener("resize", handleResize);
-
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1500);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      clearTimeout(timer);
-    };
+    return () => window.removeEventListener("resize", handleResize);
   }, [isMobile]);
 
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const token = localStorage.getItem('authToken');
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/instructor/dashboard`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          setDashboardData({
+            myExams: data.myExams || 0,
+            ongoingExams: data.ongoingExams || 0,
+            resultSummary: data.resultSummary || 0,
+            malpracticeAlerts: data.malpracticeAlerts || 0
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
   const stats = [
-    { title: "My Exams", value: testExamCount, icon: <TfiWrite />, color: "bg-[#EFF6FF]" },
+    { title: "My Exams", value: dashboardData.myExams, icon: <TfiWrite />, color: "bg-[#EFF6FF]" },
     {
       title: "Ongoing Exams",
-      value: testExamCount > 0 ? Math.floor(testExamCount / 2) : 0,
+      value: dashboardData.ongoingExams,
       icon: <FiClock />,
       color: "bg-[#FFFBEB]",
     },
     {
       title: "Result Summary",
-      value: testExamCount > 0 ? testExamCount * 2 : 0,
+      value: dashboardData.resultSummary,
       icon: <FaChartLine />,
       color: "bg-[#F0FDF4]",
     },
     {
       title: "Malpractice Alert",
-      value: 0,
+      value: dashboardData.malpracticeAlerts,
       icon: <TbAlertTriangle />,
       color: "bg-[#FFF5F5]",
     },
   ];
 
   // State management for Active vs Empty dashboard
-  const hasActivity = stats.some(stat => stat.value > 0) || user?.examsCreated > 0 || false;
+  const hasActivity = Object.values(dashboardData).some(value => value > 0) || false;
 
   // FIXED: Now navigates to the correct route
   const handleCreateExam = (e) => {
@@ -168,21 +195,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Test State Switcher - Remove in production */}
-          <div className="mb-4 flex gap-2">
-            <button
-              onClick={() => setTestExamCount(0)}
-              className="px-3 py-1 bg-red-500 text-white rounded text-sm"
-            >
-              Empty State
-            </button>
-            <button
-              onClick={() => setTestExamCount(5)}
-              className="px-3 py-1 bg-green-500 text-white rounded text-sm"
-            >
-              Active State
-            </button>
-          </div>
+
 
           {/* Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mt-4">
