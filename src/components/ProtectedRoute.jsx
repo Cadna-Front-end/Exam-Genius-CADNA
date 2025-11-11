@@ -1,0 +1,60 @@
+import { Navigate } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContextDefinition.js";
+import Loading from "./UI/Loading";
+
+const ProtectedRoute = ({ children, requiredRole }) => {
+  const { user, loading } = useContext(AuthContext);
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  if (!user) {
+    return <Navigate to="/signin" replace />;
+  }
+
+  if (requiredRole && user?.role !== requiredRole) {
+    // Validate user role exists and handle invalid roles
+    if (!user.role) {
+      console.error('ProtectedRoute: User role missing', {
+        timestamp: new Date().toISOString(),
+        userId: user?.id || 'unknown',
+        email: user?.email || 'unknown',
+        requiredRole,
+        currentPath: window.location.pathname
+      });
+      return <Navigate to="/signin" replace />;
+    }
+    
+    const validRoles = ['admin', 'instructor', 'student'];
+    if (!validRoles.includes(user.role)) {
+      console.error('ProtectedRoute: Invalid user role', {
+        timestamp: new Date().toISOString(),
+        userId: user?.id || 'unknown',
+        email: user?.email || 'unknown',
+        invalidRole: user.role,
+        requiredRole,
+        validRoles,
+        currentPath: window.location.pathname
+      });
+      return <Navigate to="/signin" replace />;
+    }
+    
+    console.warn('ProtectedRoute: Role mismatch, redirecting', {
+      timestamp: new Date().toISOString(),
+      userId: user?.id || 'unknown',
+      userRole: user.role,
+      requiredRole,
+      currentPath: window.location.pathname,
+      redirectPath: user.role === "instructor" ? "/instructor" : "/student"
+    });
+    
+    const redirectPath = user.role === "instructor" ? "/instructor" : "/student";
+    return <Navigate to={redirectPath} replace />;
+  }
+
+  return children;
+};
+
+export default ProtectedRoute;
