@@ -55,7 +55,7 @@ export default function Sidebar({ darkMode = false, isMobile = false }) {
         isMobile
           ? darkMode
             ? "bg-gray-800 text-white"
-            : "bg-white text-blue-600"
+            : "bg-white text-gray-800"
           : darkMode
           ? "bg-gray-800 text-white"
           : "bg-[#3B82F6] text-white"
@@ -65,7 +65,7 @@ export default function Sidebar({ darkMode = false, isMobile = false }) {
       <div className="p-6 text-xl font-normal text-[18px] font-intel tracking-wide">
         <div
           className={`text-center ${
-            isMobile && !darkMode ? "text-blue-600" : "text-white"
+            isMobile && !darkMode ? "text-gray-800" : "text-white"
           }`}
         >
           <h2 className="font-bold text-lg">Exam Genius</h2>
@@ -87,26 +87,28 @@ export default function Sidebar({ darkMode = false, isMobile = false }) {
               }
             }}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-3 rounded-md transition-all duration-200 ${
+              `flex items-center gap-3 px-3 py-3 rounded-md transition-all duration-200 group ${
                 isActive
                   ? isMobile
                     ? darkMode
-                      ? "bg-gray-700 shadow-lg"
-                      : "bg-blue-100 text-blue-600 shadow-md"
+                      ? "bg-gray-700 shadow-lg text-white"
+                      : "bg-blue-100 shadow-md text-blue-600"
                     : darkMode
-                    ? "bg-gray-700 shadow-lg"
-                    : "bg-white/25 shadow-lg"
+                    ? "bg-gray-700 shadow-lg text-white"
+                    : "bg-white/25 shadow-lg text-white"
                   : isMobile
                   ? darkMode
-                    ? "hover:bg-gray-700 hover:shadow-md"
-                    : "hover:bg-blue-50 hover:shadow-md"
+                    ? "hover:bg-gray-700 hover:shadow-md text-white hover:text-blue-300"
+                    : "hover:bg-blue-50 hover:shadow-md text-gray-800 hover:text-blue-600"
                   : darkMode
-                  ? "hover:bg-gray-700 hover:shadow-md"
-                  : "hover:bg-white/10 hover:shadow-md"
+                  ? "hover:bg-gray-700 hover:shadow-md text-white hover:text-blue-300"
+                  : "hover:bg-white/10 hover:shadow-md text-white hover:text-blue-200"
               }`
             }
           >
-            <span className="text-lg">{item.icon}</span>
+            <span className="text-lg group-hover:scale-110 transition-transform duration-200">
+              {item.icon}
+            </span>
             <span className="font-medium">{item.name}</span>
           </NavLink>
         ))}
@@ -116,17 +118,17 @@ export default function Sidebar({ darkMode = false, isMobile = false }) {
       <div className="p-4 border-t border-white/20">
         <button
           onClick={handleLogoutClick}
-          className={`flex items-center gap-3 px-4 py-3 text-sm rounded-md transition-all duration-200 w-full ${
+          className={`flex items-center gap-3 px-4 py-3 text-sm rounded-md transition-all duration-200 w-full group ${
             isMobile
               ? darkMode
-                ? "hover:bg-gray-700 text-white hover:shadow-md"
-                : "hover:bg-blue-50 text-blue-600 hover:shadow-md"
+                ? "hover:bg-gray-700 text-white hover:shadow-md hover:text-blue-300"
+                : "hover:bg-blue-50 text-gray-800 hover:shadow-md hover:text-blue-600"
               : darkMode
-              ? "hover:bg-gray-700 text-white hover:shadow-md"
-              : "hover:bg-white/10 text-white hover:shadow-md"
+              ? "hover:bg-gray-700 text-white hover:shadow-md hover:text-blue-300"
+              : "hover:bg-white/10 text-white hover:shadow-md hover:text-blue-200"
           }`}
         >
-          <FiLogOut className="text-lg" />
+          <FiLogOut className="text-lg group-hover:scale-110 transition-transform duration-200" />
           <span>Logout</span>
         </button>
       </div>

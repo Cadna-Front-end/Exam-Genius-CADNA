@@ -94,23 +94,14 @@ export default function InstructorLayout({
         darkMode ? "bg-gray-900 text-white" : "bg-[#f9fafb]"
       }`}
     >
-      {/* Header */}
+      {/* Header - FIXED/STATIC */}
       <div
-        className={`border-b ${
+        className={`border-b flex-shrink-0 ${
           darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
         } px-4 sm:px-6 py-4 flex items-center justify-between gap-4 relative`}
       >
         <div className="flex items-center gap-2 sm:gap-4 lg:gap-24 flex-1 min-w-0">
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="lg:hidden p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
-          >
-            <HiMenu
-              size={24}
-              className={darkMode ? "text-white" : "text-gray-700"}
-            />
-          </button>
-
+          {/* REMOVED: Hamburger from header */}
           <img
             src="/Logo icon.png"
             alt="Logo"
@@ -150,9 +141,7 @@ export default function InstructorLayout({
               }`}
             >
               <PiBellThin size={20} />
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                  
-              </span>
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center"></span>
             </button>
 
             {showNotifications && (
@@ -231,14 +220,31 @@ export default function InstructorLayout({
         </span>
       </div>
 
-      <div className="flex flex-1 relative">
-        {/* Sidebar Popup for Mobile & Tablet */}
+      {/* HAMBURGER - ADDED AFTER HEADER (Consistent across all pages) */}
+      <div className="lg:hidden p-4 border-b border-gray-200 dark:border-gray-700">
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+        >
+          <HiMenu
+            size={24}
+            className={darkMode ? "text-white" : "text-gray-700"}
+          />
+          <span className={darkMode ? "text-white" : "text-gray-700"}>
+            Menu
+          </span>
+        </button>
+      </div>
+
+      {/* Main Content Area - FLEXIBLE WITH SCROLL */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar - STATIC */}
         <div
           className={`
           ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} 
           lg:translate-x-0 transition-transform duration-300 ease-in-out
-          fixed inset-0 lg:static z-50
-          flex lg:block
+          fixed lg:static z-50 h-full
+          flex lg:block flex-shrink-0
         `}
         >
           <div className="w-64 h-full relative">
@@ -255,19 +261,20 @@ export default function InstructorLayout({
             </button>
           </div>
 
+          {/* Overlay for mobile */}
           <div
             className="flex-1 lg:hidden bg-black bg-opacity-50"
             onClick={() => setSidebarOpen(false)}
           />
         </div>
 
-        {/* Main Content */}
+        {/* Main Content - SCROLLABLE */}
         <div
-          className={`flex-1 p-4 sm:p-6 overflow-y-auto w-full ${
-            darkMode ? "bg-gray-900" : ""
+          className={`flex-1 overflow-y-auto w-full ${
+            darkMode ? "bg-gray-900" : "bg-[#f9fafb]"
           }`}
         >
-          {children}
+          <div className="p-4 sm:p-6">{children}</div>
         </div>
       </div>
     </div>
