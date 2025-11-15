@@ -43,8 +43,10 @@ const SecurityAndFinalize = () => {
       }
       
       const userData = {
-        ...registrationData
+        ...registrationData,
+        phone: registrationData.phoneNumber
       };
+      delete userData.phoneNumber;
       
       const result = await register(userData);
       

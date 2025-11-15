@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CiUser, CiPhone } from "react-icons/ci";
+import { isValidPhone, isValidName } from "../../utils/validation";
 
 const PersonalInfo = () => {
   const [formData, setFormData] = useState({
@@ -9,18 +10,42 @@ const PersonalInfo = () => {
     phoneNumber: ""
   });
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Clear error for this field if it exists
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (!formData.firstName || !isValidName(formData.firstName)) {
+      newErrors.firstName = "First name is required (at least 2 characters)";
+    }
+    
+    if (!formData.lastName || !isValidName(formData.lastName)) {
+      newErrors.lastName = "Last name is required (at least 2 characters)";
+    }
+    
+    if (!formData.phoneNumber || !isValidPhone(formData.phoneNumber)) {
+      newErrors.phoneNumber = "Please enter a valid phone number";
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!formData.firstName || !formData.lastName || !formData.phoneNumber) {
-      alert("Please fill in all required fields");
+    if (!validateForm()) {
       return;
     }
     
@@ -106,10 +131,13 @@ const PersonalInfo = () => {
                 name="firstName"
                 value={formData.firstName}
                 onChange={handleChange}
-                className="w-full h-10 xs:h-12 pl-8 xs:pl-10 pr-3 text-sm xs:text-base bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3B82F6]"
+                className={`w-full h-10 xs:h-12 pl-8 xs:pl-10 pr-3 text-sm xs:text-base bg-white border rounded-lg focus:outline-none focus:ring-2 ${
+                  errors.firstName ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-[#3B82F6]'
+                }`}
                 placeholder="Enter your first name"
                 required
               />
+              {errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>}
             </div>
 
             {/* Last Name */}
@@ -125,10 +153,13 @@ const PersonalInfo = () => {
                 name="lastName"
                 value={formData.lastName}
                 onChange={handleChange}
-                className="w-full h-10 xs:h-12 pl-8 xs:pl-10 pr-3 text-sm xs:text-base bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3B82F6]"
+                className={`w-full h-10 xs:h-12 pl-8 xs:pl-10 pr-3 text-sm xs:text-base bg-white border rounded-lg focus:outline-none focus:ring-2 ${
+                  errors.lastName ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-[#3B82F6]'
+                }`}
                 placeholder="Enter your last name"
                 required
               />
+              {errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>}
             </div>
 
             {/* Phone Number */}
@@ -144,10 +175,13 @@ const PersonalInfo = () => {
                 name="phoneNumber"
                 value={formData.phoneNumber}
                 onChange={handleChange}
-                className="w-full h-10 xs:h-12 pl-8 xs:pl-10 pr-3 text-sm xs:text-base bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3B82F6]"
-                placeholder="Enter your phone number"
+                className={`w-full h-10 xs:h-12 pl-8 xs:pl-10 pr-3 text-sm xs:text-base bg-white border rounded-lg focus:outline-none focus:ring-2 ${
+                  errors.phoneNumber ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-[#3B82F6]'
+                }`}
+                placeholder="Enter your phone number (e.g., +1234567890)"
                 required
               />
+              {errors.phoneNumber && <p className="text-red-500 text-xs mt-1">{errors.phoneNumber}</p>}
             </div>
 
             {/* Submit Button */}

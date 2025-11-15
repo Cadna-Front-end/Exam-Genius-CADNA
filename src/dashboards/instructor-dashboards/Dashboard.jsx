@@ -51,7 +51,7 @@ export default function Dashboard() {
             'Content-Type': 'application/json'
           }
         });
-        
+
         if (response.ok) {
           const data = await response.json();
           setDashboardData({
@@ -124,13 +124,13 @@ export default function Dashboard() {
 
   return (
     <div className={`min-h-screen ${darkMode ? "bg-gray-900 text-white" : "bg-[#f9fafb]"}`}>
-      <Header 
-        onMenuToggle={() => setSidebarOpen(true)} 
-        title="Instructor Dashboard" 
+      <Header
+        onMenuToggle={() => setSidebarOpen(true)}
+        title="Instructor Dashboard"
         darkMode={darkMode}
         onDarkModeToggle={toggleDarkMode}
       />
-      
+
       <div className="flex pt-16 relative">
         {/* Sidebar Popup for Mobile & Tablet */}
         <div
@@ -163,32 +163,28 @@ export default function Dashboard() {
 
         {/* Main Content */}
         <div
-          className={`flex-1 p-4 sm:p-6 overflow-y-auto w-full ${
-            darkMode ? "bg-gray-900" : ""
-          }`}
+          className={`flex-1 p-4 sm:p-6 overflow-y-auto w-full ${darkMode ? "bg-gray-900" : ""
+            }`}
         >
           {/* Welcome Section */}
           <div className="mt-4 sm:mt-8 mb-4 sm:mb-6 flex items-start gap-3">
             <div
-              className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center ${
-                darkMode ? "bg-gray-700" : "bg-[#B1CDFB]"
-              }`}
+              className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center ${darkMode ? "bg-gray-700" : "bg-[#B1CDFB]"
+                }`}
             >
               <span className="text-xl sm:text-2xl">👋</span>
             </div>
 
             <div>
               <h2
-                className={`text-lg sm:text-[24px] font-bold ${
-                  darkMode ? "text-white" : "text-[#0D0722]"
-                }`}
+                className={`text-lg sm:text-[24px] font-bold ${darkMode ? "text-white" : "text-[#0D0722]"
+                  }`}
               >
                 Hello, {userName}
               </h2>
               <p
-                className={`text-xs sm:text-[14px] ${
-                  darkMode ? "text-gray-300" : "text-[#666666]"
-                }`}
+                className={`text-xs sm:text-[14px] ${darkMode ? "text-gray-300" : "text-[#666666]"
+                  }`}
               >
                 Manage your assessments, analyze class performance
               </p>
@@ -210,24 +206,22 @@ export default function Dashboard() {
               {/* Recent Activity Section */}
               <div className="mt-8 lg:mt-12">
                 <h3
-                  className={`font-Inter font-normal text-lg sm:text-[22px] ${
-                    darkMode ? "text-white" : "text-[#2E2E30]"
-                  }`}
+                  className={`font-Inter font-normal text-lg sm:text-[22px] ${darkMode ? "text-white" : "text-[#2E2E30]"
+                    }`}
                 >
                   Recent Activity
                 </h3>
                 {/* Add recent exams, submissions, etc. */}
               </div>
-              
+
               {/* Quick Actions */}
               <div className="mt-6 lg:mt-8">
                 <div
                   onClick={handleCreateExam}
-                  className={`w-full sm:w-[208px] h-auto sm:h-[210px] flex flex-col items-center justify-center cursor-pointer rounded-lg transition-all duration-200 p-4 ${
-                    darkMode
-                      ? "hover:bg-gray-800 hover:shadow-lg"
-                      : "hover:bg-gray-50 hover:shadow-lg"
-                  } hover:scale-[1.02]`}
+                  className={`w-full sm:w-[208px] h-auto sm:h-[210px] flex flex-col items-center justify-center cursor-pointer rounded-lg transition-all duration-200 p-4 ${darkMode
+                    ? "hover:bg-gray-800 hover:shadow-lg"
+                    : "hover:bg-gray-50 hover:shadow-lg"
+                    } hover:scale-[1.02]`}
                 >
                   <img
                     src="/image 4.png"
@@ -236,16 +230,14 @@ export default function Dashboard() {
                   />
                   <div className="flex flex-col items-center justify-center text-center">
                     <h3
-                      className={`font-bold font-sans text-base sm:text-[20px] ${
-                        darkMode ? "text-blue-400" : "text-[#3B82F6]"
-                      }`}
+                      className={`font-bold font-sans text-base sm:text-[20px] ${darkMode ? "text-blue-400" : "text-[#3B82F6]"
+                        }`}
                     >
                       Create New Exam
                     </h3>
                     <p
-                      className={`text-xs sm:text-[14px] font-Inter font-normal ${
-                        darkMode ? "text-gray-300" : "text-[#666666]"
-                      }`}
+                      className={`text-xs sm:text-[14px] font-Inter font-normal ${darkMode ? "text-gray-300" : "text-[#666666]"
+                        }`}
                     >
                       Start crafting your next assessment
                     </p>
@@ -259,9 +251,8 @@ export default function Dashboard() {
               {/* Ready to start section */}
               <div className="mt-8 lg:mt-12">
                 <h3
-                  className={`font-Inter font-normal text-lg sm:text-[22px] ${
-                    darkMode ? "text-white" : "text-[#2E2E30]"
-                  }`}
+                  className={`font-Inter font-normal text-lg sm:text-[22px] ${darkMode ? "text-white" : "text-[#2E2E30]"
+                    }`}
                 >
                   Ready to start?
                 </h3>
@@ -271,11 +262,10 @@ export default function Dashboard() {
               <div className="mt-6 lg:mt-8">
                 <div
                   onClick={handleCreateExam}
-                  className={`w-full sm:w-[208px] h-auto sm:h-[210px] flex flex-col items-center justify-center cursor-pointer rounded-lg transition-all duration-200 p-4 ${
-                    darkMode
-                      ? "hover:bg-gray-800 hover:shadow-lg"
-                      : "hover:bg-gray-50 hover:shadow-lg"
-                  } hover:scale-[1.02]`}
+                  className={`w-full sm:w-[208px] h-auto sm:h-[210px] flex flex-col items-center justify-center cursor-pointer rounded-lg transition-all duration-200 p-4 ${darkMode
+                    ? "hover:bg-gray-800 hover:shadow-lg"
+                    : "hover:bg-gray-50 hover:shadow-lg"
+                    } hover:scale-[1.02]`}
                 >
                   <img
                     src="/image 4.png"
@@ -284,16 +274,14 @@ export default function Dashboard() {
                   />
                   <div className="flex flex-col items-center justify-center text-center">
                     <h3
-                      className={`font-bold font-sans text-base sm:text-[20px] ${
-                        darkMode ? "text-blue-400" : "text-[#3B82F6]"
-                      }`}
+                      className={`font-bold font-sans text-base sm:text-[20px] ${darkMode ? "text-blue-400" : "text-[#3B82F6]"
+                        }`}
                     >
                       Create New Exam
                     </h3>
                     <p
-                      className={`text-xs sm:text-[14px] font-Inter font-normal ${
-                        darkMode ? "text-gray-300" : "text-[#666666]"
-                      }`}
+                      className={`text-xs sm:text-[14px] font-Inter font-normal ${darkMode ? "text-gray-300" : "text-[#666666]"
+                        }`}
                     >
                       Start crafting your next assessment
                     </p>
