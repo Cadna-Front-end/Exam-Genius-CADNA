@@ -18,9 +18,7 @@ const CreatingAccount = () => {
       <div className="bg-white rounded-lg shadow-sm w-full max-w-md p-8">
         {/* Logo */}
         <div className="mb-12">
-          <h1 className="text-xl font-bold text-gray-900">
-            <span className="text-[#3B82F6]">Assess</span> Acad
-          </h1>
+          <img src="/Logo icon.png" alt="Exam Genius" className="w-24 h-auto" />
         </div>
 
         {/* Loading Animation */}
