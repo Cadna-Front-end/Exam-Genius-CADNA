@@ -101,15 +101,18 @@ const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     try {
+      console.log('Attempting login to:', `${import.meta.env.VITE_API_URL}${API_ENDPOINTS.LOGIN}`);
       const response = await apiClient.post(API_ENDPOINTS.LOGIN, credentials);
       
-      if (!response.success || !response.data) {
-        throw new Error(response.message || 'Login failed');
+      console.log('Login response:', response);
+      
+      if (!response || (!response.success && !response.data)) {
+        throw new Error(response?.message || 'Invalid response from server');
       }
       
-
-      
-      const { user: userData, accessToken: token, twoFARequired, tempToken } = response.data;
+      // Handle direct response format (some APIs return data directly)
+      const responseData = response.data || response;
+      const { user: userData, accessToken: token, twoFARequired, tempToken } = responseData;
       
       // If 2FA is required, store temp token and return 2FA flag
       if (twoFARequired) {

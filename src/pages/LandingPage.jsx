@@ -51,7 +51,7 @@ const LandingPage = () => {
             <button 
               onClick={() => {
                 try {
-                  navigate("/register/account");
+                  navigate("/register");
                 } catch (error) {
                   console.error('Navigation error:', error);
                 }
@@ -87,7 +87,7 @@ const LandingPage = () => {
             <button 
               onClick={() => {
                 try {
-                  navigate("/register/account");
+                  navigate("/register");
                 } catch (error) {
                   console.error('Navigation error:', error);
                 }
@@ -194,7 +194,7 @@ const LandingPage = () => {
             <button 
               onClick={() => {
                 try {
-                  navigate("/register/account");
+                  navigate("/register");
                 } catch (error) {
                   console.error('Navigation error:', error);
                 }
