@@ -15,7 +15,7 @@ const RoleSelector = () => {
       {/* Header */}
       <div className="w-full bg-white border-b border-gray-100 px-6 py-4">
         <img
-          src="/bigger logo.png"
+          src="/bigger%20logo.png"
           alt="Exam Genius"
           className="h-16"
         />
