@@ -79,27 +79,37 @@ const SecurityAndFinalize = () => {
           </h1>
           <p className="text-sm xs:text-base text-gray-600 mb-4 sm:mb-6">Join the future of AI-powered assessment.</p>
           
-          {/* Progress Steps */}
-          <div className="flex justify-center items-center space-x-2 xs:space-x-4 sm:space-x-8 mb-6 sm:mb-8 overflow-x-auto">
-            <div className="flex flex-col items-center">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-500 text-white rounded-full flex items-center justify-center font-semibold mb-1 sm:mb-2 text-sm sm:text-base">
+          {/* Mobile Progress Bar */}
+          <div className="block sm:hidden mb-6">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm text-gray-600">Step 3 of 3</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="bg-[#3B82F6] h-2 rounded-full" style={{width: '100%'}}></div>
+            </div>
+          </div>
+
+          {/* Desktop Progress Steps */}
+          <div className="hidden sm:flex justify-center items-center space-x-8 mb-6 sm:mb-8">
+            <div className="flex flex-col items-center cursor-pointer" onClick={() => navigate('/register/account')}>
+              <div className="w-10 h-10 bg-green-500 text-white rounded-full flex items-center justify-center font-semibold mb-2 text-sm hover:bg-green-600 transition-colors">
                 ✓
               </div>
-              <span className="text-xs sm:text-sm text-green-600 whitespace-nowrap">Account Details</span>
+              <span className="text-sm text-green-600 hover:text-green-700 transition-colors">Account Details</span>
             </div>
-            <div className="w-8 xs:w-12 sm:w-16 h-0.5 bg-green-500"></div>
-            <div className="flex flex-col items-center">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-500 text-white rounded-full flex items-center justify-center font-semibold mb-1 sm:mb-2 text-sm sm:text-base">
+            <div className="w-16 h-0.5 bg-green-500"></div>
+            <div className="flex flex-col items-center cursor-pointer" onClick={() => navigate('/register/personal')}>
+              <div className="w-10 h-10 bg-green-500 text-white rounded-full flex items-center justify-center font-semibold mb-2 text-sm hover:bg-green-600 transition-colors">
                 ✓
               </div>
-              <span className="text-xs sm:text-sm text-green-600 whitespace-nowrap">Personal Info</span>
+              <span className="text-sm text-green-600 hover:text-green-700 transition-colors">Personal Info</span>
             </div>
-            <div className="w-8 xs:w-12 sm:w-16 h-0.5 bg-green-500"></div>
-            <div className="flex flex-col items-center">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#3B82F6] text-white rounded-full flex items-center justify-center font-semibold mb-1 sm:mb-2 text-sm sm:text-base">
+            <div className="w-16 h-0.5 bg-green-500"></div>
+            <div className="flex flex-col items-center cursor-pointer">
+              <div className="w-10 h-10 bg-[#3B82F6] text-white rounded-full flex items-center justify-center font-semibold mb-2 text-sm">
                 3
               </div>
-              <span className="text-xs sm:text-sm font-medium text-[#3B82F6] whitespace-nowrap">Security</span>
+              <span className="text-sm font-medium text-[#3B82F6]">Security</span>
             </div>
           </div>
         </div>

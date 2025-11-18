@@ -67,7 +67,12 @@ const Signin = () => {
         setError(result.error || "Invalid credentials");
       }
     } catch (error) {
-      setError("Network error. Please try again later.");
+      console.error('Login error:', error);
+      if (error.message.includes('fetch') || error.message.includes('Network')) {
+        setError("Cannot connect to server. Please check your internet connection.");
+      } else {
+        setError(error.message || "Login failed. Please try again.");
+      }
     } finally {
       setLoading(false);
     }

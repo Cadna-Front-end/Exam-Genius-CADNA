@@ -4,11 +4,14 @@ import { CiMail, CiLock } from "react-icons/ci";
 import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 
 const AccountDetails = () => {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    confirmPassword: "",
-    userType: "student"
+  const [formData, setFormData] = useState(() => {
+    const existingData = JSON.parse(localStorage.getItem('registrationData') || '{}');
+    return {
+      email: existingData.email || "",
+      password: existingData.password || "",
+      confirmPassword: "",
+      userType: existingData.role || localStorage.getItem('accountType') || "student"
+    };
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -102,27 +105,37 @@ const AccountDetails = () => {
           </h1>
           <p className="text-sm lg:text-base text-gray-600 mb-6 lg:mb-8">Join the future of AI-powered assessment.</p>
           
-          {/* Progress Steps */}
-          <div className="flex justify-center items-center space-x-4 sm:space-x-8 lg:space-x-12 mb-6 lg:mb-8">
+          {/* Mobile Progress Bar */}
+          <div className="block sm:hidden mb-6">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm text-gray-600">Step 1 of 3</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="bg-[#3B82F6] h-2 rounded-full" style={{width: '33.33%'}}></div>
+            </div>
+          </div>
+
+          {/* Desktop Progress Steps */}
+          <div className="hidden sm:flex justify-center items-center space-x-8 lg:space-x-12 mb-6 lg:mb-8">
             <div className="flex flex-col items-center">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-[#3B82F6] text-white rounded-full flex items-center justify-center font-semibold mb-2 text-sm lg:text-base">
+              <div className="w-10 h-10 lg:w-12 lg:h-12 bg-[#3B82F6] text-white rounded-full flex items-center justify-center font-semibold mb-2 text-sm lg:text-base">
                 1
               </div>
-              <span className="text-xs sm:text-sm lg:text-base font-medium text-[#3B82F6]">Account Details</span>
+              <span className="text-sm lg:text-base font-medium text-[#3B82F6]">Account Details</span>
             </div>
-            <div className="w-12 sm:w-16 lg:w-20 h-0.5 bg-gray-300"></div>
-            <div className="flex flex-col items-center">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-gray-300 text-gray-500 rounded-full flex items-center justify-center font-semibold mb-2 text-sm lg:text-base">
+            <div className="w-16 lg:w-20 h-0.5 bg-gray-300"></div>
+            <div className="flex flex-col items-center cursor-not-allowed opacity-50">
+              <div className="w-10 h-10 lg:w-12 lg:h-12 bg-gray-300 text-gray-500 rounded-full flex items-center justify-center font-semibold mb-2 text-sm lg:text-base">
                 2
               </div>
-              <span className="text-xs sm:text-sm lg:text-base text-gray-500">Personal Info</span>
+              <span className="text-sm lg:text-base text-gray-500">Personal Info</span>
             </div>
-            <div className="w-12 sm:w-16 lg:w-20 h-0.5 bg-gray-300"></div>
-            <div className="flex flex-col items-center">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-gray-300 text-gray-500 rounded-full flex items-center justify-center font-semibold mb-2 text-sm lg:text-base">
+            <div className="w-16 lg:w-20 h-0.5 bg-gray-300"></div>
+            <div className="flex flex-col items-center cursor-not-allowed opacity-50">
+              <div className="w-10 h-10 lg:w-12 lg:h-12 bg-gray-300 text-gray-500 rounded-full flex items-center justify-center font-semibold mb-2 text-sm lg:text-base">
                 3
               </div>
-              <span className="text-xs sm:text-sm lg:text-base text-gray-500">Security</span>
+              <span className="text-sm lg:text-base text-gray-500">Security</span>
             </div>
           </div>
         </div>
@@ -137,41 +150,14 @@ const AccountDetails = () => {
               </div>
             )}
             
-            {/* Account Type Selection */}
-            <div>
-              <label className="block text-sm lg:text-lg font-medium text-gray-700 mb-3 lg:mb-4">
-                Account Type
-              </label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6">
-                <button
-                  type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, userType: "student" }))}
-                  className={`p-4 lg:p-8 border rounded-lg text-center transition-colors ${
-                    formData.userType === "student" ? 'border-[#3B82F6] bg-blue-50 text-[#3B82F6]' : 'border-gray-300 hover:bg-gray-50'
-                  }`}
-                >
-                  <div className="font-medium lg:text-xl">Student</div>
-                  <div className="text-sm lg:text-base text-gray-500 mt-1">Take exams and view results</div>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, userType: "instructor" }))}
-                  className={`p-4 lg:p-8 border rounded-lg text-center transition-colors ${
-                    formData.userType === "instructor" ? 'border-[#3B82F6] bg-blue-50 text-[#3B82F6]' : 'border-gray-300 hover:bg-gray-50'
-                  }`}
-                >
-                  <div className="font-medium lg:text-xl">Instructor</div>
-                  <div className="text-sm lg:text-base text-gray-500 mt-1">Create and manage exams</div>
-                </button>
-              </div>
-            </div>
+
 
             {/* Email Address */}
             <div className="relative">
               <label className="block text-sm lg:text-lg font-medium text-gray-700 mb-3">
                 Email Address
               </label>
-              <div className="absolute left-4 top-12 lg:top-14 transform translate-y-1/2 text-gray-500">
+              <div className="absolute left-4 top-11 sm:top-12 lg:top-16 text-gray-500">
                 <CiMail size={20} />
               </div>
               <input
@@ -193,11 +179,11 @@ const AccountDetails = () => {
               <label className="block text-sm lg:text-lg font-medium text-gray-700 mb-3">
                 Password
               </label>
-              <div className="absolute left-4 top-12 lg:top-14 transform translate-y-1/2 text-gray-500">
+              <div className="absolute left-4 top-11 sm:top-12 lg:top-16 text-gray-500">
                 <CiLock size={20} />
               </div>
               <div
-                className="absolute right-4 top-12 lg:top-14 transform translate-y-1/2 text-gray-500 cursor-pointer"
+                className="absolute right-4 top-11 sm:top-12 lg:top-16 text-gray-500 cursor-pointer"
                 onClick={() => setShowPassword(prev => !prev)}
               >
                 {showPassword ? <IoEyeOffOutline size={20} /> : <IoEyeOutline size={20} />}
@@ -221,11 +207,11 @@ const AccountDetails = () => {
               <label className="block text-sm lg:text-lg font-medium text-gray-700 mb-3">
                 Confirm Password
               </label>
-              <div className="absolute left-4 top-12 lg:top-14 transform translate-y-1/2 text-gray-500">
+              <div className="absolute left-4 top-11 sm:top-12 lg:top-16 text-gray-500">
                 <CiLock size={20} />
               </div>
               <div
-                className="absolute right-4 top-12 lg:top-14 transform translate-y-1/2 text-gray-500 cursor-pointer"
+                className="absolute right-4 top-11 sm:top-12 lg:top-16 text-gray-500 cursor-pointer"
                 onClick={() => setShowConfirmPassword(prev => !prev)}
               >
                 {showConfirmPassword ? <IoEyeOffOutline size={20} /> : <IoEyeOutline size={20} />}
