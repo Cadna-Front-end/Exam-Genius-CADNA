@@ -33,7 +33,7 @@ const SecurityAndFinalize = () => {
       const registrationData = JSON.parse(localStorage.getItem('registrationData') || '{}');
       
       // Validate required fields are present
-      const requiredFields = ['firstName', 'lastName', 'email', 'phone', 'password', 'role'];
+      const requiredFields = ['firstName', 'lastName', 'email', 'phoneNumber', 'password', 'role'];
       const missingFields = requiredFields.filter(field => !registrationData[field]);
       
       if (missingFields.length > 0) {
@@ -43,8 +43,10 @@ const SecurityAndFinalize = () => {
       }
       
       const userData = {
-        ...registrationData
+        ...registrationData,
+        phone: registrationData.phoneNumber
       };
+      delete userData.phoneNumber;
       
       const result = await register(userData);
       
