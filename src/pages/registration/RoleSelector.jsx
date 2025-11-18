@@ -60,7 +60,7 @@ const RoleSelector = () => {
                   Student
                 </h3>
                 <p className="text-gray-600 text-base mb-6">
-                  Take exams and view your results
+                  Take assigned exams, track personal scores, and view your detailed performance results.
                 </p>
               </div>
 
@@ -84,7 +84,7 @@ const RoleSelector = () => {
                   Instructor
                 </h3>
                 <p className="text-gray-600 text-base mb-6">
-                  Create and manage exams for students
+                  Create, manage and assign exams. Review integrity reports and analyze performance.
                 </p>
               </div>
 
