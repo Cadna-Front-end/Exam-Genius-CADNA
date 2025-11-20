@@ -1,31 +1,29 @@
 import Sidebar from "./Sidebar";
 import EmptyState from "./EmptyState";
 import StatCard from "./StatCard";
+import Header from "./Header";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDarkMode } from "../../contexts/DarkModeContext.jsx";
+import { useExam } from "../../contexts/ExamContext";
 
 import { FiClock } from "react-icons/fi";
 import { TbAlertTriangle } from "react-icons/tb";
 import { TfiWrite } from "react-icons/tfi";
 import { FaChartLine } from "react-icons/fa6";
-import { GoMoon } from "react-icons/go";
-import { PiBellThin } from "react-icons/pi";
-import { LuUser } from "react-icons/lu";
+import { FaCheckCircle, FaFileAlt } from "react-icons/fa";
 import { HiMenu } from "react-icons/hi";
 import { IoClose } from "react-icons/io5";
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { darkMode } = useDarkMode();
+  const { exams, recentActivities, getStats } = useExam(); // ADD getStats
 
   // Safely get username
   let userName = "User";
-  const [darkMode, setDarkMode] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
-
-  // Frontend state for dropdowns
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [showUserMenu, setShowUserMenu] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -45,16 +43,6 @@ export default function Dashboard() {
     };
   }, []);
 
-  useEffect(() => {
-    const handleClickOutside = () => {
-      setShowNotifications(false);
-      setShowUserMenu(false);
-    };
-
-    document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
-  }, []);
-
   try {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     if (storedUser && storedUser.name) {
@@ -65,66 +53,96 @@ export default function Dashboard() {
     localStorage.removeItem("user");
   }
 
+  // Get dynamic stats from context instead of hardcoded zeros
+  const statsData = getStats();
+
   const stats = [
-    { title: "My Exams", value: 0, icon: <TfiWrite />, color: "bg-[#EFF6FF]" },
+    {
+      title: "My Exams",
+      value: statsData.totalExams,
+      icon: <TfiWrite />,
+      color: "bg-[#EFF6FF]",
+    },
     {
       title: "Ongoing Exams",
-      value: 0,
+      value: statsData.publishedExams,
       icon: <FiClock />,
       color: "bg-[#FFFBEB]",
     },
     {
       title: "Result Summary",
-      value: 0,
+      value: statsData.totalStudents,
       icon: <FaChartLine />,
       color: "bg-[#F0FDF4]",
     },
     {
       title: "Malpractice Alert",
-      value: 0,
+      value: statsData.draftExams,
       icon: <TbAlertTriangle />,
       color: "bg-[#FFF5F5]",
     },
   ];
 
-  // FIXED: Now navigates to the correct route
   const handleCreateExam = (e) => {
     e.stopPropagation();
-    navigate("/create-exam"); // CHANGED: Fixed route to match App.jsx
+    navigate("/create-exam");
   };
 
-  const toggleDarkMode = (e) => {
-    e.stopPropagation();
-    setDarkMode(!darkMode);
-    if (!darkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  };
+  // Add Recent Activities component
+  const ActivityItem = ({ activity }) => {
+    const getActivityIcon = (type) => {
+      switch (type) {
+        case "exam_created":
+          return <FaCheckCircle className="text-green-500" />;
+        default:
+          return <FaFileAlt className="text-blue-500" />;
+      }
+    };
 
-  const handleNotifications = (e) => {
-    e.stopPropagation();
-    setShowNotifications(!showNotifications);
-    setShowUserMenu(false);
-  };
+    const formatTime = (timestamp) => {
+      return new Date(timestamp).toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    };
 
-  const handleUserProfile = (e) => {
-    e.stopPropagation();
-    setShowUserMenu(!showUserMenu);
-    setShowNotifications(false);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    navigate("/signin");
+    return (
+      <div
+        className={`flex items-start space-x-3 p-3 rounded-lg ${
+          darkMode ? "hover:bg-gray-700" : "hover:bg-gray-50"
+        } transition-colors`}
+      >
+        <div className="mt-1">{getActivityIcon(activity.type)}</div>
+        <div className="flex-1">
+          <p
+            className={`font-medium ${
+              darkMode ? "text-white" : "text-gray-900"
+            }`}
+          >
+            {activity.title}
+          </p>
+          <p
+            className={`text-sm ${
+              darkMode ? "text-gray-400" : "text-gray-600"
+            }`}
+          >
+            {activity.description}
+          </p>
+        </div>
+        <div
+          className={`text-xs ${darkMode ? "text-gray-500" : "text-gray-400"}`}
+        >
+          {formatTime(activity.timestamp)}
+        </div>
+      </div>
+    );
   };
 
   if (loading) {
     return (
       <div
         className={`h-screen flex items-center justify-center ${
-          darkMode ? "bg-gray-900" : "bg-[#f9fafb]"
+          darkMode ? "bg-[#0F1A28]" : "bg-[#f9fafb]"
         }`}
       >
         <div className="text-center">
@@ -140,134 +158,12 @@ export default function Dashboard() {
   return (
     <div
       className={`h-screen flex flex-col ${
-        darkMode ? "bg-gray-900 text-white" : "bg-[#f9fafb]"
+        darkMode ? "bg-[#0F1A28] text-white" : "bg-[#f9fafb]"
       }`}
     >
-      {/* Header - ADDED: flex-shrink-0 */}
-      <div
-        className={`border-b flex-shrink-0 ${
-          darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
-        } px-4 sm:px-6 py-4 flex items-center justify-between gap-4 relative`}
-      >
-        <div className="flex items-center gap-2 sm:gap-4 lg:gap-24 flex-1 min-w-0">
-          <img
-            src="Logo icon.png"
-            alt="Logo"
-            className="w-16 sm:w-20 lg:w-[120px] flex-shrink-0"
-          />
-          <h1
-            className={`font-Poppins text-lg sm:text-xl lg:text-[32px] font-bold ${
-              darkMode ? "text-white" : "text-[#2E2E30]"
-            } truncate`}
-          >
-            Dashboard
-          </h1>
-        </div>
+      <Header title="Dashboard" />
 
-        {/* Icons with Dropdowns */}
-        <span className="flex gap-4 sm:gap-8 flex-shrink-0">
-          <button
-            onClick={toggleDarkMode}
-            className={`p-2 rounded-lg ${
-              darkMode
-                ? "bg-gray-700 text-yellow-400 hover:bg-gray-600"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
-          >
-            <GoMoon size={20} />
-          </button>
-
-          {/* Notifications with Dropdown */}
-          <div className="relative">
-            <button
-              onClick={handleNotifications}
-              className={`p-2 rounded-lg relative ${
-                darkMode
-                  ? "bg-gray-700 text-white hover:bg-gray-600"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-              }`}
-            >
-              <PiBellThin size={20} />
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center"></span>
-            </button>
-
-            {showNotifications && (
-              <div
-                className={`absolute right-0 mt-2 w-80 rounded-lg shadow-lg z-50 ${
-                  darkMode
-                    ? "bg-gray-800 border border-gray-700"
-                    : "bg-white border border-gray-200"
-                }`}
-              >
-                <div className="p-4">
-                  <h3
-                    className={`font-semibold mb-2 ${
-                      darkMode ? "text-white" : "text-gray-900"
-                    }`}
-                  >
-                    Notifications
-                  </h3>
-                  <div
-                    className={`text-sm ${
-                      darkMode ? "text-gray-300" : "text-gray-600"
-                    }`}
-                  >
-                    <p>No new notifications</p>
-                    <p className="text-xs mt-2">
-                      Student submissions will appear here
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* User Menu with Dropdown */}
-          <div className="relative">
-            <button
-              onClick={handleUserProfile}
-              className={`p-2 rounded-lg ${
-                darkMode
-                  ? "bg-gray-700 text-white hover:bg-gray-600"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-              }`}
-            >
-              <LuUser size={20} />
-            </button>
-
-            {showUserMenu && (
-              <div
-                className={`absolute right-0 mt-2 w-48 rounded-lg shadow-lg z-50 ${
-                  darkMode
-                    ? "bg-gray-800 border border-gray-700"
-                    : "bg-white border border-gray-200"
-                }`}
-              >
-                <div className="p-2">
-                  <div
-                    className={`px-3 py-2 text-sm ${
-                      darkMode ? "text-gray-300" : "text-gray-600"
-                    }`}
-                  >
-                    Signed in as <strong>{userName}</strong>
-                  </div>
-                  <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div>
-                  <button
-                    onClick={handleLogout}
-                    className={`w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                      darkMode ? "text-white" : "text-gray-700"
-                    }`}
-                  >
-                    Logout
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        </span>
-      </div>
-
-      {/* HAMBURGER - ADDED AFTER HEADER (REMOVED GRAY BG) */}
+      {/* HAMBURGER */}
       <div className="lg:hidden p-4 border-b border-gray-200 dark:border-gray-700">
         <button
           onClick={() => setSidebarOpen(true)}
@@ -277,15 +173,11 @@ export default function Dashboard() {
             size={24}
             className={darkMode ? "text-white" : "text-gray-700"}
           />
-          <span className={darkMode ? "text-white" : "text-gray-700"}>
-            
-          </span>
         </button>
       </div>
 
-      {/* CHANGED: Added min-h-0 to allow proper flex shrinking */}
       <div className="flex flex-1 min-h-0 relative">
-        {/* Sidebar Popup for Mobile & Tablet - ADDED: flex-shrink-0 */}
+        {/* Sidebar */}
         <div
           className={`
           ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} 
@@ -314,10 +206,10 @@ export default function Dashboard() {
           />
         </div>
 
-        {/* Main Content - CHANGED: overflow-y-auto to overflow-auto */}
+        {/* Main Content */}
         <div
           className={`flex-1 p-4 sm:p-6 overflow-auto w-full ${
-            darkMode ? "bg-gray-900" : ""
+            darkMode ? "bg-[#0F1A28]" : ""
           }`}
         >
           {/* Welcome Section */}
@@ -348,7 +240,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Stats */}
+          {/* Stats - NOW DYNAMIC */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mt-4">
             {stats.map((stat, i) => (
               <StatCard key={i} {...stat} darkMode={darkMode} />
@@ -370,35 +262,68 @@ export default function Dashboard() {
           <div className="mt-6 lg:mt-8">
             <div
               onClick={handleCreateExam}
-              className={`w-full sm:w-[208px] h-auto sm:h-[210px] flex flex-col items-center justify-center cursor-pointer rounded-lg transition-all duration-200 p-4 ${
-                darkMode
-                  ? "hover:bg-gray-800 hover:shadow-lg"
-                  : "hover:bg-gray-50 hover:shadow-lg"
-              } hover:scale-[1.02]`}
+              className="flex flex-col items-start cursor-pointer transition-all duration-200 hover:scale-[1.02] max-w-max"
             >
-              <img
-                src="image 4.png"
-                alt="Create Exam"
-                className="w-16 h-16 sm:w-auto sm:h-auto mb-4"
-              />
-              <div className="flex flex-col items-center justify-center text-center">
+              <div className="mb-4 flex justify-start">
+                <img
+                  src="image 4.png"
+                  alt="Create Exam"
+                  className="w-20 h-20 flex-shrink-0"
+                />
+              </div>
+
+              <div className="flex flex-col items-start justify-center text-left space-y-2">
                 <h3
-                  className={`font-bold font-sans text-base sm:text-[20px] ${
+                  className={`font-bold font-sans text-lg ${
                     darkMode ? "text-blue-400" : "text-[#3B82F6]"
-                  }`}
+                  } leading-tight`}
                 >
                   Create New Exam
                 </h3>
                 <p
-                  className={`text-xs sm:text-[14px] font-Inter font-normal ${
+                  className={`text-sm font-Inter font-normal ${
                     darkMode ? "text-gray-300" : "text-[#666666]"
-                  }`}
+                  } leading-tight break-words max-w-[200px]`}
                 >
                   Start crafting your next assessment
                 </p>
               </div>
             </div>
           </div>
+
+          {/* Recent Activities Section - ONLY shows when there are activities */}
+          {recentActivities.length > 0 && (
+            <div className="mt-8 lg:mt-12">
+              <div
+                className={`rounded-lg border ${
+                  darkMode
+                    ? "bg-gray-800 border-gray-600"
+                    : "bg-white border-gray-200"
+                }`}
+              >
+                <div
+                  className={`p-6 border-b ${
+                    darkMode ? "border-gray-600" : "border-gray-200"
+                  }`}
+                >
+                  <h2
+                    className={`text-xl font-bold ${
+                      darkMode ? "text-white" : "text-gray-900"
+                    }`}
+                  >
+                    Recent Activity
+                  </h2>
+                </div>
+                <div className="p-4 max-h-96 overflow-y-auto">
+                  <div className="space-y-2">
+                    {recentActivities.map((activity) => (
+                      <ActivityItem key={activity.id} activity={activity} />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Empty State */}
           <div className="mt-6 sm:mt-8">

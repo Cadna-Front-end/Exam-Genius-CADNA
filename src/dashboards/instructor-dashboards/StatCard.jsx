@@ -1,3 +1,5 @@
+import { useDarkMode } from "../../contexts/DarkModeContext.jsx";
+
 export default function StatCard({
   title,
   value,

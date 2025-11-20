@@ -1,13 +1,14 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { RxDashboard } from "react-icons/rx";
 import { TfiWrite } from "react-icons/tfi";
 import { TbMessageQuestion } from "react-icons/tb";
 import { FiClipboard, FiBarChart2, FiSettings, FiLogOut } from "react-icons/fi";
-import { useState } from "react"; // Added for logout confirmation
+import { useState } from "react";
 
 export default function Sidebar({ darkMode = false, isMobile = false }) {
   const navigate = useNavigate();
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false); // Logout confirmation state
+  const location = useLocation();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const menu = [
     { name: "Dashboard", icon: <RxDashboard />, link: "/dashboard/instructor" },
@@ -33,7 +34,21 @@ export default function Sidebar({ darkMode = false, isMobile = false }) {
     },
   ];
 
-  // Enhanced logout handler with confirmation
+  // Manual active state check
+  const isActive = (link) => {
+    if (link === "/dashboard/instructor") {
+      return location.pathname === "/dashboard/instructor";
+    }
+    return location.pathname.startsWith(link);
+  };
+
+  const handleNavigation = (link) => {
+    navigate(link);
+    if (isMobile) {
+      console.log("Close mobile sidebar");
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
@@ -54,10 +69,10 @@ export default function Sidebar({ darkMode = false, isMobile = false }) {
       className={`w-64 h-full flex flex-col ${
         isMobile
           ? darkMode
-            ? "bg-gray-800 text-white"
+            ? "bg-[#0A141F] text-white"
             : "bg-white text-gray-800"
           : darkMode
-          ? "bg-gray-800 text-white"
+          ? "bg-[#0A141F] text-white"
           : "bg-[#3B82F6] text-white"
       }`}
     >
@@ -67,68 +82,71 @@ export default function Sidebar({ darkMode = false, isMobile = false }) {
           className={`text-center ${
             isMobile && !darkMode ? "text-gray-800" : "text-white"
           }`}
-        >
-          <h2 className="font-bold text-lg">Exam Genius</h2>
-          <p className="text-xs opacity-80">Instructor Portal</p>
-        </div>
+        ></div>
       </div>
 
-      {/* Navigation Menu */}
+      {/* Navigation Menu - FIXED: Using manual active state */}
       <nav className="flex-1 px-4 space-y-2">
-        {menu.map((item) => (
-          <NavLink
-            key={item.name}
-            to={item.link}
-            onClick={() => {
-              // Close mobile sidebar when item is clicked (for better UX)
-              if (isMobile) {
-                // You might want to pass a callback to close sidebar
-                console.log("Close mobile sidebar");
-              }
-            }}
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-3 rounded-md transition-all duration-200 group ${
-                isActive
+        {menu.map((item) => {
+          const active = isActive(item.link);
+          return (
+            <button
+              key={item.name}
+              onClick={() => handleNavigation(item.link)}
+              className={`flex items-center gap-3 px-3 py-3 rounded-md transition-all duration-200 group w-full text-left ${
+                active
                   ? isMobile
                     ? darkMode
-                      ? "bg-gray-700 shadow-lg text-white"
+                      ? "bg-[#0A141F] shadow-lg text-white"
                       : "bg-blue-100 shadow-md text-blue-600"
                     : darkMode
                     ? "bg-gray-700 shadow-lg text-white"
                     : "bg-white/25 shadow-lg text-white"
                   : isMobile
                   ? darkMode
-                    ? "hover:bg-gray-700 hover:shadow-md text-white hover:text-blue-300"
-                    : "hover:bg-blue-50 hover:shadow-md text-gray-800 hover:text-blue-600"
+                    ? "text-white hover:bg-[#24559F] hover:shadow-md"
+                    : "text-gray-800 hover:bg-blue-100 hover:text-blue-600"
                   : darkMode
-                  ? "hover:bg-gray-700 hover:shadow-md text-white hover:text-blue-300"
-                  : "hover:bg-white/10 hover:shadow-md text-white hover:text-blue-200"
-              }`
-            }
-          >
-            <span className="text-lg group-hover:scale-110 transition-transform duration-200">
-              {item.icon}
-            </span>
-            <span className="font-medium">{item.name}</span>
-          </NavLink>
-        ))}
+                  ? "hover:bg-[#24559F] hover:shadow-md text-white hover:text-blue-300"
+                  : "hover:bg-[#24559F] hover:shadow-md text-white hover:text-blue-200"
+              }`}
+            >
+              <span
+                className={`text-lg ${
+                  isMobile
+                    ? ""
+                    : "group-hover:scale-110 transition-transform duration-200"
+                }`}
+              >
+                {item.icon}
+              </span>
+              <span className="font-medium">{item.name}</span>
+            </button>
+          );
+        })}
       </nav>
 
       {/* Logout Section */}
       <div className="p-4 border-t border-white/20">
         <button
           onClick={handleLogoutClick}
-          className={`flex items-center gap-3 px-4 py-3 text-sm rounded-md transition-all duration-200 w-full group ${
+          className={`flex items-center gap-3 px-4 py-3 text-sm rounded-md transition-all duration-200 w-full ${
             isMobile
               ? darkMode
-                ? "hover:bg-gray-700 text-white hover:shadow-md hover:text-blue-300"
-                : "hover:bg-blue-50 text-gray-800 hover:shadow-md hover:text-blue-600"
+                ? "text-white hover:bg-[#24559F] hover:shadow-md"
+                : "text-gray-800 hover:bg-blue-100 hover:text-blue-600"
               : darkMode
               ? "hover:bg-gray-700 text-white hover:shadow-md hover:text-blue-300"
               : "hover:bg-white/10 text-white hover:shadow-md hover:text-blue-200"
           }`}
         >
-          <FiLogOut className="text-lg group-hover:scale-110 transition-transform duration-200" />
+          <FiLogOut
+            className={`text-lg ${
+              isMobile
+                ? ""
+                : "group-hover:scale-110 transition-transform duration-200"
+            }`}
+          />
           <span>Logout</span>
         </button>
       </div>
