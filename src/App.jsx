@@ -14,6 +14,7 @@ import CreateExamPage from "./dashboards/instructor-dashboards/CreateExamPage.js
 import AdminDashboard from "./dashboards/admindashboard/AdminDashboard.jsx";
 import ExamTaking from "./pages/ExamTaking.jsx";
 import StudentExams from "./pages/studentexams/StudentExams.jsx";
+import StudentSettings from "./pages/StudentSettings.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import PublicRoute from "./components/PublicRoute.jsx";
 import ErrorBoundary from "./components/ErrorBoundary.jsx";
@@ -72,6 +73,11 @@ function App() {
       <Route path="/student/exams" element={
         <ProtectedRoute requiredRole="student">
           <StudentExams />
+        </ProtectedRoute>
+      } />
+      <Route path="/student/settings" element={
+        <ProtectedRoute requiredRole="student">
+          <StudentSettings />
         </ProtectedRoute>
       } />
       <Route path="/instructor" element={

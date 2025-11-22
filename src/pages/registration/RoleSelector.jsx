@@ -13,7 +13,7 @@ const RoleSelector = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <div className="w-full bg-white border-b border-gray-100 px-6 py-4">
+      <div className="fixed top-0 left-0 right-0 z-50 w-full bg-white border-b border-gray-100 px-6 py-4">
         <img
           src="/bigger%20logo.png"
           alt="Exam Genius"
@@ -22,7 +22,7 @@ const RoleSelector = () => {
       </div>
 
       {/* Back Button Section */}
-      <div className="w-full px-6 py-4">
+      <div className="w-full px-6 py-4 mt-20">
         <button 
           onClick={() => navigate('/')}
           className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
