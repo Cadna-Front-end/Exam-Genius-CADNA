@@ -17,7 +17,7 @@ const RoleSelector = () => {
         <img
           src="/bigger%20logo.png"
           alt="Exam Genius"
-          className="h-16"
+          className="h-12 sm:h-16"
         />
       </div>
 
