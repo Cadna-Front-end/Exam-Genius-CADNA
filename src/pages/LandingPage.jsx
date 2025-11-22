@@ -77,7 +77,6 @@ const LandingPage = () => {
                 Platform
               </span>
             </h1>
-            // amazonq-ignore-next-line
             <p className="text-lg sm:text-xl text-gray-600 mb-8 max-w-4xl mx-auto leading-relaxed">
               Secure, transparent, and intelligent examination system that addresses integrity, 
               efficiency, and accessibility gaps in education and professional testing.
