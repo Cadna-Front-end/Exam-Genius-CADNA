@@ -22,7 +22,7 @@ const StudentDashboard = () => {
   const { user } = useContext(AuthContext);
   
   // Automatically detect if user has activity
-  const hasActivity = true; // Set to true to see ActiveDashboard
+  const hasActivity = false; // Set to true to see ActiveDashboard
 
   return (
     <div className="min-h-screen bg-gray-50">
