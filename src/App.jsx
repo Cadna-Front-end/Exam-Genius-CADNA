@@ -13,6 +13,8 @@ import InstructorDashboard from "./dashboards/instructor-dashboards/Dashboard.js
 import CreateExamPage from "./dashboards/instructor-dashboards/CreateExamPage.jsx";
 import AdminDashboard from "./dashboards/admindashboard/AdminDashboard.jsx";
 import ExamTaking from "./pages/ExamTaking.jsx";
+import ExamAccessPage from "./pages/ExamAccessPage.jsx";
+import ExamEnrollment from "./pages/ExamEnrollment.jsx";
 import StudentExams from "./pages/studentexams/StudentExams.jsx";
 import StudentSettings from "./pages/StudentSettings.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
@@ -95,7 +97,17 @@ function App() {
           <AdminDashboard />
         </ProtectedRoute>
       } />
-      <Route path="/exam/:examId" element={
+      <Route path="/exam/:examLink" element={
+        <ProtectedRoute requiredRole="student">
+          <ExamEnrollment />
+        </ProtectedRoute>
+      } />
+      <Route path="/exam-details/:examId" element={
+        <ProtectedRoute requiredRole="student">
+          <ExamAccessPage />
+        </ProtectedRoute>
+      } />
+      <Route path="/take-exam/:examId" element={
         <ProtectedRoute requiredRole="student">
           <ExamTaking />
         </ProtectedRoute>

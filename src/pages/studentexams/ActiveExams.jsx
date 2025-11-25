@@ -13,59 +13,41 @@ const ActiveExams = ({ user, exams }) => {
   };
 
   const confirmStart = () => {
-    navigate(`/exam/${selectedExam.id}`);
+    navigate(`/exam-details/${selectedExam.id}`);
   };
 
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {exams.map((exam) => (
-          <div key={exam.id} className="bg-white border rounded-lg p-6 shadow-sm flex flex-col h-full">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {exams.map((exam, index) => (
+          <div key={exam.id || exam._id || index} className="bg-white border rounded-lg p-6 shadow-sm flex flex-col h-full">
             <div className="flex-1">
-              <h3 className="font-semibold text-gray-900 mb-1">{exam.title}</h3>
+              <h3 className="font-semibold text-gray-900 mb-1">{exam.title || exam.name}</h3>
               <p className="text-sm text-gray-600 mb-3">{exam.description || exam.subject}</p>
 
               <div className="space-y-4">
                 <div className="flex items-center justify-between text-xs text-gray-500">
                   <div className="flex items-center">
                     <IoTimeOutline className="mr-2" size={14} />
-                    <span>Duration:</span>
+                    <span>Due Date</span>
                   </div>
-                  <span>{exam.timeLimit} minutes</span>
-                </div>
-                <div className="flex items-center justify-between text-xs text-gray-500">
                   <div className="flex items-center">
-                    <IoBookOutline className="mr-2" size={14} />
-                    <span>Questions:</span>
+                    <IoTimeOutline className="mr-2" size={14} />
+                    <span>{exam.timeLimit || exam.duration}m</span>
                   </div>
-                  <span>{exam.questionCount}</span>
                 </div>
-                <div className="flex items-center justify-between text-xs text-gray-500">
-                  <span>Status:</span>
-                  <span className={`px-2 py-1 rounded text-xs ${
-                    exam.status === 'available' 
-                      ? 'bg-green-100 text-green-800'
-                      : exam.status === 'completed'
-                      ? 'bg-blue-100 text-blue-800'
-                      : 'bg-gray-100 text-gray-800'
-                  }`}>
-                    {exam.status}
-                  </span>
+                <div className="flex items-center text-xs text-gray-500">
+                  <IoBookOutline className="mr-2" size={14} />
+                  <span>{exam.questionCount || exam.questions?.length || 0} Questions</span>
                 </div>
               </div>
             </div>
             
             <button 
               onClick={() => startExam(exam)}
-              className={`w-full py-3 px-4 rounded-lg text-sm font-medium transition-colors mt-6 ${
-                exam.status === 'available' 
-                  ? 'bg-blue-500 text-white hover:bg-blue-600' 
-                  : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-              }`}
-              disabled={exam.status !== 'available'}
+              className="w-full bg-blue-500 text-white py-3 px-4 rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors mt-6"
             >
-              {exam.status === 'available' ? 'Start Exam' : 
-               exam.status === 'completed' ? 'Completed' : 'Not Available'}
+              Start Exam
             </button>
           </div>
         ))}

@@ -36,9 +36,6 @@ export const ROUTES = {
 
 // Route validation helper
 export const isValidRoute = (route) => {
-  // amazonq-ignore-next-line
-  // amazonq-ignore-next-line
-  // amazonq-ignore-next-line
   const allRoutes = Object.values(ROUTES).flat();
   const nestedRoutes = Object.values(ROUTES.REGISTER).concat(Object.values(ROUTES.DASHBOARD));
   return allRoutes.includes(route) || nestedRoutes.includes(route);
