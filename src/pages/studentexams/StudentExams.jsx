@@ -18,14 +18,31 @@ const StudentExams = () => {
   useEffect(() => {
     const fetchExams = async () => {
       try {
-        const response = await apiClient.get(API_ENDPOINTS.EXAMS);
-        if (response.success) {
-          setExams(Array.isArray(response.data) ? response.data : []);
+        const response = await apiClient.get(`${API_ENDPOINTS.EXAMS}?enrolled=true`);
+        console.log('Enrolled exams response:', response);
+        
+        if (response && response.success && response.data) {
+          if (Array.isArray(response.data)) {
+            setExams(response.data);
+          } else if (response.data.exams && Array.isArray(response.data.exams)) {
+            setExams(response.data.exams);
+          } else {
+            // Single exam object, convert to array
+            setExams([response.data]);
+          }
+        } else if (response && Array.isArray(response.data)) {
+          setExams(response.data);
+        } else if (Array.isArray(response)) {
+          setExams(response);
         } else {
-          setError("Failed to load exams");
+          // API succeeded but no exams - not an error
+          setExams([]);
         }
+        setError(""); // Clear any previous errors
       } catch (error) {
-        setError("Error loading exams");
+        console.error('API Error:', error);
+        setError("Failed to connect to server");
+        setExams([]);
       } finally {
         setLoading(false);
       }
@@ -60,6 +77,7 @@ const StudentExams = () => {
             </div>
           </div>
         </div>
+
 
         {error && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">

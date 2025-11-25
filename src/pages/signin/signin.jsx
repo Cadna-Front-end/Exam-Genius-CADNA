@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import { CiMail, CiLock } from "react-icons/ci";
 import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 import { IoIosCheckboxOutline } from "react-icons/io";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContextDefinition.js";
 
 const Signin = () => {
@@ -14,7 +14,10 @@ const Signin = () => {
   const [rememberMe, setRememberMe] = useState(false);
 
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { login } = useContext(AuthContext);
+  
+  const redirectPath = searchParams.get('redirect');
 
   useEffect(() => {
     const savedEmail = localStorage.getItem("rememberedEmail");
@@ -55,9 +58,13 @@ const Signin = () => {
           navigate('/2fa');
         } else {
           try {
-            const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-            const redirectPath = userData?.role === 'instructor' ? '/instructor' : '/student';
-            navigate(redirectPath);
+            if (redirectPath) {
+              navigate(redirectPath);
+            } else {
+              const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+              const defaultPath = userData?.role === 'instructor' ? '/instructor' : '/student';
+              navigate(defaultPath);
+            }
           } catch (error) {
             console.error('Error parsing user data:', error);
             setError('Login successful but navigation failed. Please try again.');

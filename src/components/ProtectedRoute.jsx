@@ -1,17 +1,18 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContextDefinition.js";
 import Loading from "./UI/Loading";
 
 const ProtectedRoute = ({ children, requiredRole }) => {
   const { user, loading } = useContext(AuthContext);
+  const location = useLocation();
 
   if (loading) {
     return <Loading />;
   }
 
   if (!user) {
-    return <Navigate to="/signin" replace />;
+    return <Navigate to={`/signin?redirect=${encodeURIComponent(location.pathname)}`} replace />;
   }
 
   if (requiredRole && user?.role !== requiredRole) {
@@ -24,7 +25,7 @@ const ProtectedRoute = ({ children, requiredRole }) => {
         requiredRole,
         currentPath: window.location.pathname
       });
-      return <Navigate to="/signin" replace />;
+      return <Navigate to={`/signin?redirect=${encodeURIComponent(location.pathname)}`} replace />;
     }
     
     const validRoles = ['admin', 'instructor', 'student'];
@@ -38,7 +39,7 @@ const ProtectedRoute = ({ children, requiredRole }) => {
         validRoles,
         currentPath: window.location.pathname
       });
-      return <Navigate to="/signin" replace />;
+      return <Navigate to={`/signin?redirect=${encodeURIComponent(location.pathname)}`} replace />;
     }
     
     console.warn('ProtectedRoute: Role mismatch, redirecting', {

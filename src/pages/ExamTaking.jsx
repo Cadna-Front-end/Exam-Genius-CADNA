@@ -19,21 +19,32 @@ const ExamTaking = () => {
   useEffect(() => {
     const initializeExam = async () => {
       try {
+        // Use real exam ID from localStorage if available, otherwise use URL param
+        const realExamId = localStorage.getItem('currentExamId') || examId;
+        
         // Validate examId
-        if (!examId || typeof examId !== 'string') {
+        if (!realExamId || typeof realExamId !== 'string') {
           throw new Error('Invalid exam ID');
         }
         
-        // Start exam session for extended token
-        await tokenManager.current.startExamSession(examId);
-        
-        const response = await apiClient.get(API_ENDPOINTS.EXAM_DETAILS(examId));
-        if (response.success && response.data) {
-          setExam(response.data);
-          setTimeLeft(response.data.timeLimit * 60);
-        } else {
-          throw new Error(response.message || 'Failed to load exam');
+        // Get exam details first
+        const examResponse = await apiClient.get(API_ENDPOINTS.EXAM_DETAILS(realExamId));
+        if (!examResponse.success || !examResponse.data) {
+          throw new Error(examResponse.message || 'Failed to load exam');
         }
+        
+        // Start exam session
+        const sessionResponse = await apiClient.post(API_ENDPOINTS.START_EXAM(realExamId), {
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+        });
+        
+        if (!sessionResponse.success || !sessionResponse.data) {
+          throw new Error(sessionResponse.message || 'Failed to start exam session');
+        }
+        
+        setExam(examResponse.data);
+        setTimeLeft(examResponse.data.timeLimit * 60);
+        
       } catch (error) {
         console.error('Exam initialization error:', error);
         setError(error.message || "Error loading exam");

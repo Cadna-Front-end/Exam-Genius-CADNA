@@ -13,14 +13,12 @@ const EmptyExams = ({ user }) => {
       </p>
       
       <div className="space-y-4">
-        <button className="bg-[#3B82F6] text-white px-6 py-3 rounded-lg hover:bg-[#2D6AC9] font-medium">
+        <button 
+          onClick={() => window.location.reload()}
+          className="bg-[#3B82F6] text-white px-6 py-3 rounded-lg hover:bg-[#2D6AC9] font-medium"
+        >
           Refresh Page
         </button>
-        <div>
-          <button className="text-[#3B82F6] hover:underline font-medium">
-            Contact Support
-          </button>
-        </div>
       </div>
     </div>
   );

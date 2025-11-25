@@ -1,17 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContextDefinition.js";
-import { 
-  FiCheckCircle, 
-  FiTrendingUp, 
-  FiClock, 
-  FiPlay, 
-  FiCalendar,
-  FiAward,
-  FiFileText,
-  FiEdit3
-} from "react-icons/fi";
-import { IoBookOutline, IoTrophyOutline, IoTimeOutline, IoCheckmarkCircleOutline, IoShieldCheckmarkOutline, IoShieldOutline } from "react-icons/io5";
+
 import ActiveDashboard from "./ActiveDashboard";
 import EmptyDashboard from "./EmptyDashboard";
 import Header from "../../components/Layout/Header";
@@ -19,10 +9,53 @@ import Sidebar from "../../components/Layout/Sidebar";
 
 const StudentDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [dashboardData, setDashboardData] = useState(null);
   const { user } = useContext(AuthContext);
   
-  // Automatically detect if user has activity
-  const hasActivity = false; // Set to true to see ActiveDashboard
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const token = localStorage.getItem('authToken');
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // Reduced to 10s
+        
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/me`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (response.ok) {
+          const data = await response.json();
+          setDashboardData(data);
+        } else {
+          throw new Error('Server error');
+        }
+      } catch (error) {
+        console.error('Dashboard fetch error:', error);
+        setError('Failed to load dashboard data');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    if (user) {
+      fetchDashboardData();
+    } else {
+      setLoading(false);
+    }
+  }, [user]);
+  
+  const hasActivity = dashboardData?.hasActivity || false;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -48,12 +81,36 @@ const StudentDashboard = () => {
 
         </div>
 
-        {hasActivity ? (
-          /* User has activity - Show ActiveDashboard */
-          <ActiveDashboard user={user} />
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading your dashboard...</p>
+            </div>
+          </div>
+        ) : error && !dashboardData ? (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+            <p className="text-red-600 mb-4">{error}</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+            >
+              Retry
+            </button>
+          </div>
         ) : (
-          /* New user with no activity - Show EmptyDashboard */
-          <EmptyDashboard user={user} />
+          <>
+            {error && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                <p className="text-yellow-700 text-sm">{error}</p>
+              </div>
+            )}
+            {hasActivity ? (
+              <ActiveDashboard user={user} dashboardData={dashboardData} />
+            ) : (
+              <EmptyDashboard user={user} />
+            )}
+          </>
         )}
       </main>
     </div>

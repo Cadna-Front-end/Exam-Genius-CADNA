@@ -56,14 +56,14 @@ const Sidebar = ({ isOpen, userRole = "student", onClose }) => {
       {/* Sidebar */}
       <aside 
         className={`
-          fixed top-16 bottom-0 left-0 z-30
-          bg-blue-500 shadow-lg border-r border-blue-600
+          fixed top-16 bottom-0 left-0 z-50
+          shadow-lg border-r
           transition-transform duration-300 ease-in-out
           w-64
           ${
             isOpen 
-              ? "translate-x-0" 
-              : "-translate-x-full lg:translate-x-0"
+              ? "translate-x-0 bg-white border-gray-200" 
+              : "-translate-x-full lg:translate-x-0 lg:bg-blue-500 lg:border-blue-600"
           }
         `}>
         <div className="p-4 border-b hidden">
@@ -98,8 +98,8 @@ const Sidebar = ({ isOpen, userRole = "student", onClose }) => {
                   onClick={() => window.innerWidth < 1024 && onClose && onClose()}
                   className={`flex items-center space-x-3 px-6 py-3 transition-colors ${
                     isActive
-                      ? "bg-black bg-opacity-30 text-white"
-                      : "text-white text-opacity-80 hover:bg-black hover:bg-opacity-20 hover:text-white"
+                      ? "bg-black bg-opacity-30 text-white lg:bg-black lg:bg-opacity-30 lg:text-white" + (isOpen ? " !bg-blue-100 !text-blue-600" : "")
+                      : "text-white text-opacity-80 hover:bg-black hover:bg-opacity-20 hover:text-white lg:text-white lg:text-opacity-80 lg:hover:bg-black lg:hover:bg-opacity-20 lg:hover:text-white" + (isOpen ? " !text-gray-700 !hover:bg-gray-100 !hover:text-gray-900" : "")
                   }`}
                 >
                   <Icon size={20} />
@@ -112,7 +112,11 @@ const Sidebar = ({ isOpen, userRole = "student", onClose }) => {
           {/* Logout at bottom */}
           <button
             onClick={handleLogout}
-            className="flex items-center space-x-3 px-6 py-3 transition-colors text-white text-opacity-80 hover:bg-black hover:bg-opacity-20 hover:text-white mt-auto"
+            className={`flex items-center space-x-3 px-6 py-3 transition-colors mt-auto ${
+              isOpen 
+                ? "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                : "text-white text-opacity-80 hover:bg-black hover:bg-opacity-20 hover:text-white"
+            }`}
           >
             <IoLogOutOutline size={20} />
             <span className="font-medium">Logout</span>
