@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { IoShieldCheckmarkOutline, IoBookOutline, IoStatsChartOutline, IoGlobeOutline } from "react-icons/io5";
+import LogoLink from "../components/LogoLink.jsx";
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -30,13 +31,13 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="px-4 sm:px-6 lg:px-8 py-4 border-b">
+      <header className="px-4 sm:px-6 lg:px-8 py-4 border-b bg-white border-gray-200">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center">
-            <img src="/Logo icon.png" alt="Exam Genius" className="h-8 sm:h-10" />
+            <LogoLink src="/Logo icon.png" className="h-8 sm:h-10" />
           </div>
           <div className="flex items-center space-x-2 sm:space-x-4">
-            <button 
+            <button
               onClick={() => {
                 try {
                   navigate("/signin");
@@ -44,11 +45,11 @@ const LandingPage = () => {
                   console.error('Navigation error:', error);
                 }
               }}
-              className="px-3 sm:px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm sm:text-base transition-colors"
+              className="px-3 sm:px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg text-sm sm:text-base transition-colors"
             >
               Sign In
             </button>
-            <button 
+            <button
               onClick={() => {
                 try {
                   navigate("/register");
@@ -78,12 +79,12 @@ const LandingPage = () => {
               </span>
             </h1>
             <p className="text-lg sm:text-xl text-gray-600 mb-8 max-w-4xl mx-auto leading-relaxed">
-              Secure, transparent, and intelligent examination system that addresses integrity, 
+              Secure, transparent, and intelligent examination system that addresses integrity,
               efficiency, and accessibility gaps in education and professional testing.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <button 
+            <button
               onClick={() => {
                 try {
                   navigate("/register");
@@ -95,7 +96,7 @@ const LandingPage = () => {
             >
               Get Started Now
             </button>
-            <button 
+            <button
               onClick={() => {
                 try {
                   console.info('Learn More clicked');
@@ -103,7 +104,7 @@ const LandingPage = () => {
                   console.error('Learn More error:', error);
                 }
               }}
-              className="w-full sm:w-auto px-8 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-lg font-medium transition-colors"
+              className="w-full sm:w-auto px-8 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg text-lg font-medium transition-colors"
             >
               Learn More
             </button>
@@ -134,7 +135,7 @@ const LandingPage = () => {
               Built for modern education with cutting-edge AI technology and advanced security features
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
             {features.map((feature, index) => (
               <div key={index} className="group text-center p-6 sm:p-8 rounded-2xl border border-gray-200 hover:border-blue-300 hover:shadow-xl transition-all duration-300 bg-white">
@@ -158,7 +159,7 @@ const LandingPage = () => {
           <p className="text-base sm:text-lg text-gray-600 mb-8 sm:mb-12 max-w-3xl mx-auto">
             AI-generated questions across core academic areas with adaptive difficulty levels
           </p>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {[
               { name: "English", icon: "📚", type: "Core Subject" },
@@ -190,7 +191,7 @@ const LandingPage = () => {
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <button 
+            <button
               onClick={() => {
                 try {
                   navigate("/register");
@@ -202,7 +203,7 @@ const LandingPage = () => {
             >
               Start Your Journey
             </button>
-            <button 
+            <button
               onClick={() => {
                 try {
                   console.info('Contact Us clicked');

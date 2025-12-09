@@ -1,7 +1,9 @@
 import { IoBookOutline, IoTrophyOutline, IoTimeOutline, IoCheckmarkCircleOutline, IoShieldOutline } from "react-icons/io5";
 import { FiClock, FiFileText, FiEdit3, FiTrendingUp } from "react-icons/fi";
+import { useTheme } from "../../context/ThemeContext.jsx";
 
 const ActiveDashboard = () => {
+  const { darkMode } = useTheme();
   const summaryCards = [
     { title: "Upcoming Exams", value: "5", type: "number", icon: FiClock, color: "bg-[#FBEBFF]", iconColor: "text-[#86249F]" },
     { title: "Total Certificates Earned", value: "3", type: "number", icon: FiFileText, color: "bg-[#FFF4E6]", iconColor: "text-[#FF8C00]" },
@@ -10,18 +12,18 @@ const ActiveDashboard = () => {
   ];
 
   return (
-    <div className="bg-gray-50">
+    <div className={darkMode ? 'bg-gray-900' : 'bg-gray-50'}>
       {/* Top Summary Cards - 4 equal cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 px-4 sm:px-8">
         {summaryCards.map((card, index) => (
-          <div key={index} className="bg-white rounded-lg p-6 shadow-sm border">
+          <div key={index} className={`${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} rounded-lg p-6 shadow-sm border`}>
             <div className="flex items-center gap-4">
               <div className={`${card.color} p-3 rounded-lg`}>
                 <card.icon className={card.iconColor} size={20} />
               </div>
               <div>
-                <p className="text-xs font-medium text-gray-600 mb-1">{card.title}</p>
-                <p className="text-xl font-bold text-gray-900">{card.value}</p>
+                <p className={`text-xs font-medium ${darkMode ? 'text-gray-400' : 'text-gray-600'} mb-1`}>{card.title}</p>
+                <p className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{card.value}</p>
               </div>
             </div>
           </div>
@@ -29,14 +31,14 @@ const ActiveDashboard = () => {
       </div>
 
       {/* AI Integrity Status - Full width */}
-      <div className="bg-white rounded-lg p-6 shadow-sm border mb-8 mx-4 sm:mx-8">
+      <div className={`${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} rounded-lg p-6 shadow-sm border mb-8 mx-4 sm:mx-8`}>
         <div className="flex items-center gap-4">
           <div className="bg-red-100 p-3 rounded-lg">
             <IoShieldOutline className="text-red-600" size={20} />
           </div>
           <div>
-            <p className="text-xs font-medium text-gray-600 mb-1">AI Integrity Status</p>
-            <p className="text-xl font-bold text-gray-900">98%</p>
+            <p className={`text-xs font-medium ${darkMode ? 'text-gray-400' : 'text-gray-600'} mb-1`}>AI Integrity Status</p>
+            <p className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>98%</p>
           </div>
         </div>
       </div>

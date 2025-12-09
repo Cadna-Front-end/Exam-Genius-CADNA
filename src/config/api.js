@@ -23,6 +23,7 @@ export const API_ENDPOINTS = {
   EXAM_SESSION: (sessionId) => `/api/exam-sessions/${sessionId}`,
   SUBMIT_ANSWER: (sessionId) => `/api/exam-sessions/${sessionId}/answer`,
   SUBMIT_EXAM: (sessionId) => `/api/exam-sessions/${sessionId}/submit`,
+  AUTO_SUBMIT_EXAM: (sessionId) => `/api/exam-sessions/${sessionId}/auto-submit`,
   FLAG_ACTIVITY: (sessionId) => `/api/exam-sessions/${sessionId}/flag-activity`,
   
   // Results endpoints
@@ -82,36 +83,11 @@ class ApiClient {
       
       if (!response.ok) {
         if (response.status === 401 && endpoint !== '/api/auth/refresh') {
-          // Try to refresh token
-          const refreshToken = localStorage.getItem('refreshToken');
-          if (refreshToken) {
-            try {
-              const refreshResponse = await fetch(`${this.baseURL}/api/auth/refresh`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ refreshToken })
-              });
-              
-              if (refreshResponse.ok) {
-                const refreshData = await refreshResponse.json();
-                // Validate and sanitize token before storing
-                if (refreshData.data && refreshData.data.accessToken && 
-                    typeof refreshData.data.accessToken === 'string' &&
-                    /^[a-zA-Z0-9._-]+$/.test(refreshData.data.accessToken)) {
-                  localStorage.setItem('authToken', refreshData.data.accessToken);
-                  
-                  // Retry original request with new token
-                  config.headers.Authorization = `Bearer ${refreshData.data.accessToken}`;
-                  const retryResponse = await fetch(`${this.baseURL}${endpoint}`, config);
-                  if (retryResponse.ok) {
-                    return await retryResponse.json();
-                  }
-                }
-              }
-            } catch (refreshError) {
-              console.warn('Token refresh failed:', refreshError.message);
-            }
-          }
+          // Clear invalid token and redirect to login
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('refreshToken');
+          window.location.href = '/signin';
+          return;
         }
         
         let errorMessage = `HTTP ${response.status}: ${response.statusText}`;

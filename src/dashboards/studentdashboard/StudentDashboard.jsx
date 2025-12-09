@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContextDefinition.js";
+import { useTheme } from "../../context/ThemeContext.jsx";
 
 import ActiveDashboard from "./ActiveDashboard";
 import EmptyDashboard from "./EmptyDashboard";
@@ -13,6 +14,7 @@ const StudentDashboard = () => {
   const [error, setError] = useState(null);
   const [dashboardData, setDashboardData] = useState(null);
   const { user } = useContext(AuthContext);
+  const { darkMode, toggleDarkMode } = useTheme();
   
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -21,18 +23,17 @@ const StudentDashboard = () => {
         setError(null);
         
         const token = localStorage.getItem('authToken');
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // Reduced to 10s
+        
+        if (!token) {
+          throw new Error('No authentication token found');
+        }
         
         const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/me`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
-          },
-          signal: controller.signal
+          }
         });
-        
-        clearTimeout(timeoutId);
         
         if (response.ok) {
           const data = await response.json();
@@ -42,7 +43,13 @@ const StudentDashboard = () => {
         }
       } catch (error) {
         console.error('Dashboard fetch error:', error);
-        setError('Failed to load dashboard data');
+        if (error.name === 'TypeError' && error.message.includes('fetch')) {
+          setError('Network error. Please check your internet connection.');
+        } else if (error.message.includes('No authentication token')) {
+          setError('Please sign in again.');
+        } else {
+          setError('Failed to load dashboard data. Please try again.');
+        }
       } finally {
         setLoading(false);
       }
@@ -58,8 +65,8 @@ const StudentDashboard = () => {
   const hasActivity = dashboardData?.hasActivity || false;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header onMenuToggle={() => setSidebarOpen(prev => !prev)} title="Dashboard" />
+    <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+      <Header onMenuToggle={() => setSidebarOpen(prev => !prev)} title="Dashboard" darkMode={darkMode} onDarkModeToggle={toggleDarkMode} />
       <Sidebar isOpen={sidebarOpen} userRole="student" onClose={() => setSidebarOpen(false)} />
       
       <main className="lg:ml-64 p-4 sm:p-6">

@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import { ThemeProvider } from "./context/ThemeContext.jsx";
 import LandingPage from "./pages/LandingPage.jsx";
 import Signin from "./pages/signin/signin.jsx";
 import TwoFactorAuth from "./pages/TwoFactorAuth.jsx";
@@ -15,6 +16,11 @@ import AdminDashboard from "./dashboards/admindashboard/AdminDashboard.jsx";
 import ExamTaking from "./pages/ExamTaking.jsx";
 import ExamAccessPage from "./pages/ExamAccessPage.jsx";
 import ExamEnrollment from "./pages/ExamEnrollment.jsx";
+import ExamOverview from "./pages/exam/ExamOverview.jsx";
+import WebcamCheck from "./pages/exam/WebcamCheck.jsx";
+import ExamTakingNew from "./pages/exam/ExamTaking.jsx";
+import ExamReview from "./pages/exam/ExamReview.jsx";
+import ExamResult from "./pages/exam/ExamResult.jsx";
 import StudentExams from "./pages/studentexams/StudentExams.jsx";
 import StudentSettings from "./pages/StudentSettings.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
@@ -24,7 +30,8 @@ import NotFound from "./pages/NotFound.jsx";
 
 function App() {
   return (
-    <ErrorBoundary>
+    <ThemeProvider>
+      <ErrorBoundary>
       <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/signin" element={
@@ -97,24 +104,37 @@ function App() {
           <AdminDashboard />
         </ProtectedRoute>
       } />
-      <Route path="/exam/:examLink" element={
+      <Route path="/exam/:examId/overview" element={
         <ProtectedRoute requiredRole="student">
-          <ExamEnrollment />
+          <ExamOverview />
         </ProtectedRoute>
       } />
-      <Route path="/exam-details/:examId" element={
+      <Route path="/exam/:examId/webcam-check" element={
         <ProtectedRoute requiredRole="student">
-          <ExamAccessPage />
+          <WebcamCheck />
         </ProtectedRoute>
       } />
-      <Route path="/take-exam/:examId" element={
+      <Route path="/exam/:examId/taking" element={
         <ProtectedRoute requiredRole="student">
-          <ExamTaking />
+          <ExamTakingNew />
         </ProtectedRoute>
       } />
+      <Route path="/exam/:examId/summary" element={
+        <ProtectedRoute requiredRole="student">
+          <ExamReview />
+        </ProtectedRoute>
+      } />
+      <Route path="/exam/:examId/result" element={
+        <ProtectedRoute requiredRole="student">
+          <ExamResult />
+        </ProtectedRoute>
+      } />
+      <Route path="/exam/link/:examLink" element={<ExamEnrollment />} />
+      <Route path="/exam/:examLink" element={<ExamEnrollment />} />
       <Route path="*" element={<NotFound />} />
-    </Routes>
-    </ErrorBoundary>
+      </Routes>
+      </ErrorBoundary>
+    </ThemeProvider>
   );
 }
 

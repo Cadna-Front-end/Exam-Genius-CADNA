@@ -34,6 +34,14 @@ const TwoFactorAuth = () => {
       const result = await verifyTwoFA(code);
       
       if (result.success) {
+        // Check for pending exam link
+        const pendingExamLink = localStorage.getItem('pendingExamLink');
+        if (pendingExamLink) {
+          localStorage.removeItem('pendingExamLink');
+          navigate(`/exam/link/${pendingExamLink}`);
+          return;
+        }
+        
         // Get user data from localStorage after successful verification
         const userData = JSON.parse(localStorage.getItem('userData') || '{}');
         const redirectPath = userData?.role === 'instructor' ? '/instructor' : '/student';
