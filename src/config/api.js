@@ -15,6 +15,7 @@ export const API_ENDPOINTS = {
   
   // Exam endpoints
   EXAMS: '/api/exams',
+  ENROLLED_EXAMS: '/api/user/enrolled-exams',
   EXAM_BY_LINK: (examLink) => `/api/exams/link/${examLink}`,
   EXAM_DETAILS: (examId) => `/api/exams/${examId}`,
   START_EXAM: (examId) => `/api/exams/${examId}/start`,
@@ -23,11 +24,13 @@ export const API_ENDPOINTS = {
   EXAM_SESSION: (sessionId) => `/api/exam-sessions/${sessionId}`,
   SUBMIT_ANSWER: (sessionId) => `/api/exam-sessions/${sessionId}/answer`,
   SUBMIT_EXAM: (sessionId) => `/api/exam-sessions/${sessionId}/submit`,
+  AUTO_SUBMIT_EXAM: (sessionId) => `/api/exam-sessions/${sessionId}/auto-submit`,
   FLAG_ACTIVITY: (sessionId) => `/api/exam-sessions/${sessionId}/flag-activity`,
   
   // Results endpoints
   RESULTS: '/api/results',
-  RESULT_DETAILS: (id) => `/api/results/${id}`
+  // Results by exam ID endpoint
+  RESULT_BY_EXAM: (examId) => `/api/results/${examId}`,
 };
 
 class ApiClient {
@@ -42,7 +45,7 @@ class ApiClient {
     }
     
     // Additional validation for allowed endpoints
-    const allowedPaths = ['/api/auth/', '/api/user/', '/api/users/', '/api/exams', '/api/exam-sessions/', '/api/results/'];
+    const allowedPaths = ['/api/auth/', '/api/user/', '/api/users/', '/api/exams', '/api/exam-sessions/', '/api/results'];
     const isAllowed = allowedPaths.some(path => endpoint.startsWith(path));
     if (!isAllowed) {
       throw new Error('Endpoint not allowed');
@@ -82,36 +85,11 @@ class ApiClient {
       
       if (!response.ok) {
         if (response.status === 401 && endpoint !== '/api/auth/refresh') {
-          // Try to refresh token
-          const refreshToken = localStorage.getItem('refreshToken');
-          if (refreshToken) {
-            try {
-              const refreshResponse = await fetch(`${this.baseURL}/api/auth/refresh`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ refreshToken })
-              });
-              
-              if (refreshResponse.ok) {
-                const refreshData = await refreshResponse.json();
-                // Validate and sanitize token before storing
-                if (refreshData.data && refreshData.data.accessToken && 
-                    typeof refreshData.data.accessToken === 'string' &&
-                    /^[a-zA-Z0-9._-]+$/.test(refreshData.data.accessToken)) {
-                  localStorage.setItem('authToken', refreshData.data.accessToken);
-                  
-                  // Retry original request with new token
-                  config.headers.Authorization = `Bearer ${refreshData.data.accessToken}`;
-                  const retryResponse = await fetch(`${this.baseURL}${endpoint}`, config);
-                  if (retryResponse.ok) {
-                    return await retryResponse.json();
-                  }
-                }
-              }
-            } catch (refreshError) {
-              console.warn('Token refresh failed:', refreshError.message);
-            }
-          }
+          // Clear invalid token and redirect to login
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('refreshToken');
+          window.location.href = '/signin';
+          return;
         }
         
         let errorMessage = `HTTP ${response.status}: ${response.statusText}`;

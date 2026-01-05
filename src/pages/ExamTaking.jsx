@@ -68,14 +68,15 @@ const ExamTaking = () => {
     };
   }, [examId]);
 
-  useEffect(() => {
-    if (timeLeft > 0 && !submitting) {
-      const timer = setTimeout(() => setTimeLeft(prev => prev - 1), 1000);
-      return () => clearTimeout(timer);
-    } else if (timeLeft === 0 && exam && !submitting) {
-      handleSubmit();
-    }
-  }, [timeLeft, exam, submitting]);
+  // Timer paused for now
+  // useEffect(() => {
+  //   if (timeLeft > 0 && !submitting) {
+  //     const timer = setTimeout(() => setTimeLeft(prev => prev - 1), 1000);
+  //     return () => clearTimeout(timer);
+  //   } else if (timeLeft === 0 && exam && !submitting) {
+  //     handleSubmit();
+  //   }
+  // }, [timeLeft, exam, submitting]);
 
   const handleAnswerChange = (questionId, answer) => {
     setAnswers(prev => ({
@@ -126,19 +127,51 @@ const ExamTaking = () => {
   const question = exam.questions[currentQuestion];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <div className="flex justify-between items-center">
+    <div className="min-h-screen bg-gray-50">
+      {/* Navbar */}
+      <nav className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="flex justify-end">
+          <button className="text-gray-600 hover:text-gray-900 text-xl">
+            🌙
+          </button>
+        </div>
+      </nav>
+
+      {/* Exam Header Section */}
+      <div className="bg-white border-b border-gray-200 px-6 py-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-6">
             <h1 className="text-2xl font-bold text-gray-900">{exam.title}</h1>
-            <div className="text-xl font-mono text-red-600">
+            <div className="flex items-center space-x-4">
+              {/* Red Triangle Warning Icon */}
+              <div className="relative">
+                <svg width="24" height="24" viewBox="0 0 24 24" className="text-red-500">
+                  <path fill="currentColor" d="M12 2L1 21h22L12 2zm0 3.5L19.5 19h-15L12 5.5zM11 10v4h2v-4h-2zm0 6v2h2v-2h-2z"/>
+                </svg>
+              </div>
+              {/* Webcam Icon with Green Dot */}
+              <div className="relative">
+                <div className="w-10 h-7 bg-gray-800 rounded-md flex items-center justify-center">
+                  <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
+                </div>
+                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Timer */}
+          <div className="flex items-center space-x-3 bg-gray-100 px-6 py-3 rounded-full">
+            <div className="text-gray-600 text-lg">🕐</div>
+            <div className="text-xl font-mono text-gray-900 font-semibold">
               {formatTime(timeLeft)}
             </div>
           </div>
-          <div className="mt-2 text-gray-600">
-            Question {currentQuestion + 1} of {exam.questions.length}
-          </div>
+        </div>
+      </div>
+
+      <div className="max-w-4xl mx-auto p-6">
+        <div className="mb-6 text-gray-600 text-lg">
+          Question {currentQuestion + 1} of {exam.questions.length}
         </div>
 
         {/* Question */}

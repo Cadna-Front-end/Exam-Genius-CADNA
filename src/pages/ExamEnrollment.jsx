@@ -20,6 +20,14 @@ const ExamEnrollment = () => {
         const response = await apiClient.get(API_ENDPOINTS.EXAM_BY_LINK(examLink));
         
         if (response.success && response.data) {
+          // Check if authentication is required
+          if (response.data.requiresAuth) {
+            // Store exam link and redirect to login
+            localStorage.setItem('pendingExamLink', examLink);
+            navigate('/signin');
+            return;
+          }
+          
           // Check if auto-enrolled
           if (response.data.autoEnrolled) {
             setSuccessMessage(response.message || 'Successfully enrolled in exam!');
@@ -30,6 +38,12 @@ const ExamEnrollment = () => {
         }
       } catch (error) {
         console.error('Enrollment failed:', error);
+        if (error.message.includes('401') || error.message.includes('Unauthorized')) {
+          // Store exam link and redirect to login
+          localStorage.setItem('pendingExamLink', examLink);
+          navigate('/signin');
+          return;
+        }
         setSuccessMessage('Enrollment failed. Please try again.');
         setShowSuccessPopup(true);
       } finally {
@@ -38,7 +52,7 @@ const ExamEnrollment = () => {
     };
 
     handleEnrollment();
-  }, [examLink]);
+  }, [examLink, navigate]);
 
   const handleSuccessClose = () => {
     setShowSuccessPopup(false);
@@ -49,6 +63,21 @@ const ExamEnrollment = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+
+      {/* Show content when not loading and no popup */}
+      {!showSuccessPopup && (
+        <div className="text-center">
+          <h2 className="text-xl font-semibold mb-4">Processing Exam Link...</h2>
+          <p className="text-gray-600 mb-4">Exam ID: {examLink}</p>
+          <button 
+            onClick={() => navigate('/signin')}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg"
+          >
+            Sign In to Continue
+          </button>
+        </div>
+      )}
+      
       {/* Success Popup */}
       {showSuccessPopup && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

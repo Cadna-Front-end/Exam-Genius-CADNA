@@ -58,6 +58,14 @@ const Signin = () => {
           navigate('/2fa');
         } else {
           try {
+            // Check for pending exam link
+            const pendingExamLink = localStorage.getItem('pendingExamLink');
+            if (pendingExamLink) {
+              localStorage.removeItem('pendingExamLink');
+              navigate(`/exam/link/${pendingExamLink}`);
+              return;
+            }
+            
             if (redirectPath) {
               navigate(redirectPath);
             } else {

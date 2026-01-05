@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContextDefinition.js";
+import { useTheme } from "../../context/ThemeContext.jsx";
 import { apiClient, API_ENDPOINTS } from "../../config/api";
 import ActiveExams from "./ActiveExams";
 import EmptyExams from "./EmptyExams";
@@ -14,6 +15,7 @@ const StudentExams = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const { user } = useContext(AuthContext);
+  const { darkMode, toggleDarkMode } = useTheme();
   
   useEffect(() => {
     const fetchExams = async () => {
@@ -57,8 +59,8 @@ const StudentExams = () => {
   if (loading) return <Loading />;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header onMenuToggle={() => setSidebarOpen(prev => !prev)} title="Exams" />
+    <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+      <Header onMenuToggle={() => setSidebarOpen(prev => !prev)} title="Exams" darkMode={darkMode} onDarkModeToggle={toggleDarkMode} />
       <Sidebar isOpen={sidebarOpen} userRole="student" onClose={() => setSidebarOpen(false)} />
       
       <main className="lg:ml-64 p-4 sm:p-6">
