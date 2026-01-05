@@ -8,6 +8,13 @@ const ActiveExams = ({ user, exams }) => {
   
   const startExam = (exam) => {
     const examId = exam.id || exam._id || exam.examId;
+    
+    // Check if exam has been completed
+    const resultData = localStorage.getItem(`exam_result_${examId}`);
+    if (resultData) {
+      return; // Exam already completed
+    }
+    
     navigate(`/exam/${examId}/overview`);
   };
 
@@ -40,9 +47,14 @@ const ActiveExams = ({ user, exams }) => {
             
             <button 
               onClick={() => startExam(exam)}
-              className="w-full bg-blue-500 text-white py-3 px-4 rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors mt-6"
+              disabled={localStorage.getItem(`exam_result_${exam.id || exam._id || exam.examId}`)}
+              className={`w-full py-3 px-4 rounded-lg text-sm font-medium transition-colors mt-6 ${
+                localStorage.getItem(`exam_result_${exam.id || exam._id || exam.examId}`)
+                  ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                  : 'bg-blue-500 text-white hover:bg-blue-600'
+              }`}
             >
-              Start Exam
+              {localStorage.getItem(`exam_result_${exam.id || exam._id || exam.examId}`) ? 'Completed' : 'Start Exam'}
             </button>
           </div>
         ))}

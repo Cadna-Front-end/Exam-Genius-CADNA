@@ -23,7 +23,7 @@ const ExamTaking = () => {
   const recoverSession = async () => {
     try {
       const response = await examService.getUserSessions(examId);
-      const sessions = response.data; // Extract data array
+      const sessions = Array.isArray(response.data) ? response.data : response.data?.sessions || [];
       const activeSession = sessions.find(s => s.status === 'in-progress');
       if (activeSession) {
         setSessionId(activeSession._id);
@@ -39,46 +39,40 @@ const ExamTaking = () => {
   useEffect(() => {
     const initializeExam = async () => {
       try {
-        const result = await examService.getExamDetails(examId);
-        if (result.success) {
-          setExam(result.data);
-          const examDuration = (result.data.timeLimit || result.data.duration || 60) * 60;
+        // Start new session first to get session ID
+        const startResult = await examService.startExam(examId);
+        if (startResult.success) {
+          const newSessionId = startResult.data._id || startResult.data.sessionId;
+          setSessionId(newSessionId);
+          localStorage.setItem(`exam_session_${examId}`, newSessionId);
           
-          // Try to recover existing session first
-          const recoveredSession = await recoverSession();
-          
-          // Check if exam timer already started
-          const examStartKey = `exam_start_${examId}`;
-          const savedStartTime = localStorage.getItem(examStartKey);
-          
-          if (savedStartTime) {
-            const startTime = parseInt(savedStartTime);
-            const elapsed = Math.floor((Date.now() - startTime) / 1000);
-            const remaining = Math.max(0, examDuration - elapsed);
-            setTimeLeft(remaining);
-          } else {
-            localStorage.setItem(examStartKey, Date.now().toString());
-            setTimeLeft(examDuration);
-          }
-          
-          // Load saved answers and flagged questions
-          const savedAnswers = localStorage.getItem(`exam_answers_${examId}`);
-          const savedFlagged = localStorage.getItem(`exam_flagged_${examId}`);
-          
-          if (savedAnswers) setAnswers(JSON.parse(savedAnswers));
-          if (savedFlagged) setFlagged(JSON.parse(savedFlagged));
-          
-          // Start new session if no active session recovered
-          if (!recoveredSession) {
-            const startResult = await examService.startExam(examId);
-            if (startResult.success) {
-              const newSessionId = startResult.data._id || startResult.data.sessionId;
-              setSessionId(newSessionId);
-              localStorage.setItem(`exam_session_${examId}`, newSessionId);
+          // Get full exam data from session endpoint
+          const sessionResult = await examService.getExamSession(newSessionId);
+          if (sessionResult.success) {
+            setExam(sessionResult.data.exam || sessionResult.data);
+            const examDuration = (sessionResult.data.exam?.timeLimit || sessionResult.data.exam?.duration || 60) * 60;
+            
+            // Handle timer logic
+            const examStartKey = `exam_start_${examId}`;
+            const savedStartTime = localStorage.getItem(examStartKey);
+            
+            if (savedStartTime) {
+              const startTime = parseInt(savedStartTime);
+              const elapsed = Math.floor((Date.now() - startTime) / 1000);
+              const remaining = Math.max(0, examDuration - elapsed);
+              setTimeLeft(remaining);
+            } else {
+              localStorage.setItem(examStartKey, Date.now().toString());
+              setTimeLeft(examDuration);
             }
+            
+            // Load saved answers and flagged questions
+            const savedAnswers = localStorage.getItem(`exam_answers_${examId}`);
+            const savedFlagged = localStorage.getItem(`exam_flagged_${examId}`);
+            
+            if (savedAnswers) setAnswers(JSON.parse(savedAnswers));
+            if (savedFlagged) setFlagged(JSON.parse(savedFlagged));
           }
-        } else {
-          setError(result.error || 'Failed to load exam');
         }
       } catch (error) {
         setError('Error loading exam');
@@ -180,14 +174,14 @@ const ExamTaking = () => {
         return;
       }
       
-      // Clear all exam data from localStorage
-      localStorage.removeItem(`exam_start_${examId}`);
-      localStorage.removeItem(`exam_answers_${examId}`);
-      localStorage.removeItem(`exam_flagged_${examId}`);
-      localStorage.removeItem(`exam_session_${examId}`);
-      
       const result = await examService.submitExam(sessionId, answers, true);
       if (result.success) {
+        // Clear exam data
+        localStorage.removeItem(`exam_start_${examId}`);
+        localStorage.removeItem(`exam_answers_${examId}`);
+        localStorage.removeItem(`exam_flagged_${examId}`);
+        localStorage.removeItem(`exam_session_${examId}`);
+        
         navigate(`/exam/${examId}/result`);
       } else {
         setError(result.error || 'Failed to submit exam');
@@ -271,9 +265,10 @@ const ExamTaking = () => {
         <div>Questions: {questions.length}</div>
         <div>Current Q: {currentQuestion}</div>
         <div>Has currentQ: {currentQ ? 'Yes' : 'No'}</div>
-        <div>Q Text: {currentQ?.text || 'No text'}</div>
+        <div>Q Text: {currentQ?.text || currentQ?.question || currentQ?.questionText || 'No text'}</div>
         <div>Q Type: {currentQ?.type || 'No type'}</div>
-        <div>Q ID: {currentQ?.id || 'No ID'}</div>
+        <div>Q ID: {currentQ?.id || currentQ?._id || 'No ID'}</div>
+        <div>Q Keys: {currentQ ? Object.keys(currentQ).join(', ') : 'None'}</div>
       </div>
       <ExamHeader darkMode={darkMode} onDarkModeToggle={toggleDarkMode} />
 

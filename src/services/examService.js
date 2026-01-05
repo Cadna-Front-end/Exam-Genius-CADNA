@@ -80,10 +80,10 @@ export const examService = {
     }
   },
 
-  async getUserSessions(examId) {
+  async getExamSession(sessionId) {
     try {
-      const response = await apiClient.get(`/api/exam-sessions/user/${examId}`);
-      return { success: true, data: response };
+      const response = await apiClient.get(API_ENDPOINTS.EXAM_SESSION(sessionId));
+      return { success: true, data: response.data || response };
     } catch (error) {
       return { success: false, error: error.message };
     }
@@ -123,25 +123,14 @@ export const examService = {
     }
   },
 
-  async getResultDetails(resultId) {
+  async getResultByExam(examId) {
     try {
-      const token = localStorage.getItem('authToken');
-      if (!token) {
-        throw new Error('Authentication required');
-      }
-      
-      const response = await apiClient.get(API_ENDPOINTS.RESULT_DETAILS(resultId));
+      const response = await apiClient.get(API_ENDPOINTS.RESULT_BY_EXAM(examId));
       return { success: true, data: response.data || response };
     } catch (error) {
-      if (error.message.includes('401') || error.message.includes('Authentication')) {
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('userData');
-        window.location.href = '/signin';
-      }
       return { success: false, error: error.message };
     }
-  }
+  },
 };
 
 export default examService;

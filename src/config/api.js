@@ -15,6 +15,7 @@ export const API_ENDPOINTS = {
   
   // Exam endpoints
   EXAMS: '/api/exams',
+  ENROLLED_EXAMS: '/api/user/enrolled-exams',
   EXAM_BY_LINK: (examLink) => `/api/exams/link/${examLink}`,
   EXAM_DETAILS: (examId) => `/api/exams/${examId}`,
   START_EXAM: (examId) => `/api/exams/${examId}/start`,
@@ -28,7 +29,8 @@ export const API_ENDPOINTS = {
   
   // Results endpoints
   RESULTS: '/api/results',
-  RESULT_DETAILS: (id) => `/api/results/${id}`
+  // Results by exam ID endpoint
+  RESULT_BY_EXAM: (examId) => `/api/results/${examId}`,
 };
 
 class ApiClient {
@@ -43,7 +45,7 @@ class ApiClient {
     }
     
     // Additional validation for allowed endpoints
-    const allowedPaths = ['/api/auth/', '/api/user/', '/api/users/', '/api/exams', '/api/exam-sessions/', '/api/results/'];
+    const allowedPaths = ['/api/auth/', '/api/user/', '/api/users/', '/api/exams', '/api/exam-sessions/', '/api/results'];
     const isAllowed = allowedPaths.some(path => endpoint.startsWith(path));
     if (!isAllowed) {
       throw new Error('Endpoint not allowed');

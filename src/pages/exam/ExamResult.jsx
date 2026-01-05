@@ -15,31 +15,44 @@ const ExamResult = () => {
   useEffect(() => {
     const fetchResults = async () => {
       try {
-        // Try backend first
-        const result = await examService.getResultDetails(examId);
+        const result = await examService.getResultByExam(examId);
         if (result.success && result.data) {
           setResultData(result.data);
-          return;
+        } else {
+          setError('Results not available');
         }
       } catch (error) {
-        console.log('Backend failed:', error.message);
+        setError('Failed to load results');
+      } finally {
+        setLoading(false);
       }
-      
-      // Fallback to localStorage
-      const mockResult = localStorage.getItem(`exam_result_${examId}`);
-      if (mockResult) {
-        setResultData(JSON.parse(mockResult));
-      } else {
-        setError('No exam results found');
-      }
-      
-      setLoading(false);
     };
 
     if (examId) {
       fetchResults();
     }
   }, [examId]);
+
+  const handleDownloadResult = () => {
+    const content = `
+EXAM RESULT CERTIFICATE
+
+Exam: ${resultData.examTitle || 'Assessment'}
+Score: ${Math.round(resultData.score || 0)}%
+Status: ${(resultData.passed || (resultData.score || 0) >= 70) ? 'PASSED' : 'FAILED'}
+Correct Answers: ${resultData.correctAnswers || 0} of ${resultData.totalQuestions || 0}
+Date: ${new Date(resultData.submittedAt).toLocaleDateString()}
+Time: ${new Date(resultData.submittedAt).toLocaleTimeString()}
+`;
+    
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${resultData.examTitle || 'exam'}_result.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const handleDashboard = () => {
     navigate('/student');
@@ -73,8 +86,8 @@ const ExamResult = () => {
       <div className="max-w-2xl mx-auto px-6 pt-24 pb-12">
         {/* Yellow Trophy with Congratulations */}
         <div className="text-center mb-8">
-          <div className="text-6xl mb-4">🏆</div>
-          <h1 className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-2`}>Congratulations!</h1>
+          <div className="text-6xl mb-4">{(resultData.score?.passed || (resultData.score?.percentage || 0) >= 70) ? '🏆' : '❌'}</div>
+          <h1 className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-2`}>{(resultData.score?.passed || (resultData.score?.percentage || 0) >= 70) ? 'Congratulations!' : 'Exam Failed'}</h1>
         </div>
 
         {/* Exam Title */}
@@ -92,18 +105,18 @@ const ExamResult = () => {
         {/* Result Section */}
         <div className="text-center mb-8">
           {/* Percentage Score */}
-          <div className={`text-6xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-2`}>{Math.round(resultData.score || resultData.percentage || 0)}%</div>
+          <div className={`text-6xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-2`}>{Math.round(resultData.score?.percentage || 0)}%</div>
           
           {/* Questions Correct */}
           <p className={`text-lg ${darkMode ? 'text-gray-300' : 'text-gray-600'} mb-6`}>
-            {resultData.correctAnswers || resultData.correct || 0} out of {resultData.totalQuestions || resultData.total || 0} correct
+            {resultData.score?.earnedPoints || 0} out of {resultData.score?.totalPoints || 0} points
           </p>
           
           {/* Progress Bar */}
           <div className="w-full bg-gray-200 rounded-full h-3 mb-8">
             <div 
               className="h-full bg-green-500 rounded-full"
-              style={{ width: `${Math.round(resultData.score || resultData.percentage || 0)}%` }}
+              style={{ width: `${Math.round(resultData.score?.percentage || 0)}%` }}
             ></div>
           </div>
           
@@ -130,7 +143,7 @@ const ExamResult = () => {
             <h3 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'} mb-3`}>Exam Status</h3>
             
             <div className="flex items-center justify-center mb-4">
-              {(resultData.passed || resultData.status === 'passed' || (resultData.score || resultData.percentage || 0) >= 70) ? (
+              {(resultData.score?.passed || (resultData.score?.percentage || 0) >= 70) ? (
                 <>
                   <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center mr-2">
                     <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -166,7 +179,10 @@ const ExamResult = () => {
               </div>
             </div>
 
-            <button className={`mt-4 px-3 py-1 ${darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-white hover:bg-blue-50'} text-blue-600 border border-blue-600 rounded text-sm font-medium transition-colors`}>
+            <button 
+              onClick={handleDownloadResult}
+              className={`mt-4 px-3 py-1 ${darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-white hover:bg-blue-50'} text-blue-600 border border-blue-600 rounded text-sm font-medium transition-colors`}
+            >
               Download Result
             </button>
           </div>
