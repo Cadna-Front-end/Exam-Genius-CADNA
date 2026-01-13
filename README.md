@@ -77,7 +77,6 @@ javascript
 /**
  * Exam Management Context
  * @description Centralized state for exam operations
- * @created_by Adebanjo Olayinka
  * @features
  * - Exam data management
  * - Real-time updates
@@ -89,7 +88,6 @@ javascript
 /**
  * Main Instructor Dashboard
  * @description Primary interface for instructors
- * @created_by Adebanjo Olayinka
  * @components_used
  * - Sidebar.jsx: Navigation menu
  * - Header.jsx: Dashboard header
@@ -113,7 +111,6 @@ javascript
 /**
  * Exam Creation Interface
  * @description Comprehensive exam builder
- * @created_by Adebanjo Olayinka
  * @features
  * - Multi-step exam creation
  * - Question bank integration
@@ -126,7 +123,6 @@ javascript
 /**
  * Published Exams Management
  * @description Interface for managing published exams
- * @created_by Adebanjo Olayinka
  * @features
  * - Live exam monitoring
  * - Student progress tracking
