@@ -1,6 +1,6 @@
 PROJECT DOCUMENTATION FOR EXAM GENIUS (CADNA)
 
-Developed the instructor dashboard interface
+Developing the instructor dashboard interface
 
 Implemented dark mode functionality across the application
 
