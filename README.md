@@ -446,8 +446,7 @@ Documentation for common questions
 Email support for urgent matters
 
 License
-This project is proprietary software developed for [Company/Institution Name].
+This project is proprietary software developed for [Cadna].
 All rights reserved © 2025
 
-This documentation was prepared by Adebanjo Olayinka to demonstrate technical expertise and contribution to the Exam Genius CADNA project. All implementations described were personally developed and optimized by the author.
 
