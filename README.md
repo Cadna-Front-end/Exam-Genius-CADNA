@@ -443,12 +443,6 @@ Testing verification
 
 Documentation updates
 
- Contact & Support
-Developer: Adebanjo Olayinka
-Email: [Your Email]
-GitHub: [Your GitHub Profile]
-LinkedIn: [Your LinkedIn Profile]
-
 Support Channels:
 
 GitHub Issues for bug reports
