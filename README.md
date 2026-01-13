@@ -1,11 +1,6 @@
 PROJECT DOCUMENTATION FOR EXAM GENIUS (CADNA)
 
- 
-Name: Adebanjo Olayinka
-Position: Frontend Developer
-Responsibilities:
-
-Developed the complete instructor dashboard interface
+Developed the instructor dashboard interface
 
 Implemented dark mode functionality across the application
 
@@ -61,7 +56,6 @@ javascript
 /**
  * Dark Mode Context Provider
  * @description Global theme management for light/dark modes
- * @created_by Adebanjo Olayinka
  * @features
  * - System preference detection
  * - Manual theme switching
